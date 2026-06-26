@@ -32,6 +32,17 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Restaurant API is running', timestamp: new Date() });
 });
 
+app.get('/api/db-info', async (req, res) => {
+  try {
+    const db = await pool.query('SELECT current_database(), current_schema');
+    const schemas = await pool.query("SELECT schema_name FROM information_schema.schemata");
+    const tables = await pool.query("SELECT table_name, table_schema FROM information_schema.tables WHERE table_catalog=current_database()");
+    res.json({ success: true, current_db: db.rows[0], schemas: schemas.rows.map(s=>s.schema_name), all_tables: tables.rows.map(t=>t.table_schema+'.'+t.table_name) });
+  } catch (e) {
+    res.json({ success: false, error: e.message });
+  }
+});
+
 app.get('/api/db-check', async (req, res) => {
   try {
     const tables = await pool.query(`SELECT table_name FROM information_schema.tables WHERE table_schema='public'`);
