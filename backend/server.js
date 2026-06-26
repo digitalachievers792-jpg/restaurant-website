@@ -58,3 +58,5 @@ initDB().then(() => {
   console.error('Failed to initialize database:', err.message);
   process.exit(1);
 });
+
+// trigger redeploy
