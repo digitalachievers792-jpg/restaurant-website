@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reservation | Royal Oak</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
   <link rel="stylesheet" href="css/style.css?v=2">
   <link rel="stylesheet" href="css/animations.css?v=2">
   <link rel="stylesheet" href="css/responsive.css?v=2">
@@ -64,44 +65,60 @@
           <div class="tables-grid" id="tablesGrid">
             <div class="table-row-label">Main Floor</div>
             <div class="table-card" data-table="1" data-seats="2">
-              <div class="table-card-icon"><i class="fas fa-chair"></i></div>
-              <div class="table-card-number">Table 1</div>
-              <div class="table-card-seats">2 seats</div>
+              <div class="table-card-inner">
+                <div class="table-card-icon"><i class="fas fa-chair"></i></div>
+                <div class="table-card-number">Table 1</div>
+                <div class="table-card-seats">2 seats</div>
+              </div>
             </div>
             <div class="table-card" data-table="2" data-seats="2">
-              <div class="table-card-icon"><i class="fas fa-chair"></i></div>
-              <div class="table-card-number">Table 2</div>
-              <div class="table-card-seats">2 seats</div>
+              <div class="table-card-inner">
+                <div class="table-card-icon"><i class="fas fa-chair"></i></div>
+                <div class="table-card-number">Table 2</div>
+                <div class="table-card-seats">2 seats</div>
+              </div>
             </div>
             <div class="table-card" data-table="3" data-seats="4">
-              <div class="table-card-icon"><i class="fas fa-people-arrows"></i></div>
-              <div class="table-card-number">Table 3</div>
-              <div class="table-card-seats">4 seats</div>
+              <div class="table-card-inner">
+                <div class="table-card-icon"><i class="fas fa-people-arrows"></i></div>
+                <div class="table-card-number">Table 3</div>
+                <div class="table-card-seats">4 seats</div>
+              </div>
             </div>
             <div class="table-card" data-table="4" data-seats="4">
-              <div class="table-card-icon"><i class="fas fa-people-arrows"></i></div>
-              <div class="table-card-number">Table 4</div>
-              <div class="table-card-seats">4 seats</div>
+              <div class="table-card-inner">
+                <div class="table-card-icon"><i class="fas fa-people-arrows"></i></div>
+                <div class="table-card-number">Table 4</div>
+                <div class="table-card-seats">4 seats</div>
+              </div>
             </div>
             <div class="table-card" data-table="5" data-seats="6">
-              <div class="table-card-icon"><i class="fas fa-people-group"></i></div>
-              <div class="table-card-number">Table 5</div>
-              <div class="table-card-seats">6 seats</div>
+              <div class="table-card-inner">
+                <div class="table-card-icon"><i class="fas fa-people-group"></i></div>
+                <div class="table-card-number">Table 5</div>
+                <div class="table-card-seats">6 seats</div>
+              </div>
             </div>
             <div class="table-card" data-table="6" data-seats="2">
-              <div class="table-card-icon"><i class="fas fa-chair"></i></div>
-              <div class="table-card-number">Table 6</div>
-              <div class="table-card-seats">2 seats</div>
+              <div class="table-card-inner">
+                <div class="table-card-icon"><i class="fas fa-chair"></i></div>
+                <div class="table-card-number">Table 6</div>
+                <div class="table-card-seats">2 seats</div>
+              </div>
             </div>
             <div class="table-card" data-table="7" data-seats="4">
-              <div class="table-card-icon"><i class="fas fa-people-arrows"></i></div>
-              <div class="table-card-number">Table 7</div>
-              <div class="table-card-seats">4 seats</div>
+              <div class="table-card-inner">
+                <div class="table-card-icon"><i class="fas fa-people-arrows"></i></div>
+                <div class="table-card-number">Table 7</div>
+                <div class="table-card-seats">4 seats</div>
+              </div>
             </div>
             <div class="table-card" data-table="8" data-seats="6">
-              <div class="table-card-icon"><i class="fas fa-people-group"></i></div>
-              <div class="table-card-number">Table 8</div>
-              <div class="table-card-seats">6 seats</div>
+              <div class="table-card-inner">
+                <div class="table-card-icon"><i class="fas fa-people-group"></i></div>
+                <div class="table-card-number">Table 8</div>
+                <div class="table-card-seats">6 seats</div>
+              </div>
             </div>
           </div>
           <div class="table-floor-info">
@@ -277,6 +294,8 @@
     <a href="tel:+15551234567" class="call-btn" aria-label="Call"><i class="fas fa-phone"></i></a>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>AOS.init({ duration: 800, once: true, offset: 100 });</script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="js/main.js?v=3"></script>
   <script src="js/reservation.js?v=3"></script>
