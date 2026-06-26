@@ -1,0 +1,10 @@
+[phases]
+  setup = [
+    "npm install"
+  ]
+
+[phases]
+  build = []
+
+[start]
+  cmd = "node backend/server.js"
