@@ -19,7 +19,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, '..', 'frontend'), {
+const frontendPath = path.join(__dirname, '..', 'frontend');
+app.use(express.static(frontendPath, {
   setHeaders: (res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
@@ -46,7 +47,7 @@ app.use((err, req, res, next) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 initDB().then(() => {
