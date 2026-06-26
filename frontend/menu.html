@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu | Royal Oak</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/animations.css?v=2">
+  <link rel="stylesheet" href="css/responsive.css?v=2">
+</head>
+<body>
+
+  <div class="loader" id="loader">
+    <div class="loader-logo">ROYAL OAK</div>
+    <div class="loader-bar"><div class="loader-bar-inner"></div></div>
+  </div>
+
+  <header class="header" id="header">
+    <a href="index.html" class="logo">Royal<span> Oak</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="menu.html" class="active">Menu</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="reservation.html">Reservation</a>
+      <a href="contact.html">Contact</a>
+      <select class="lang-selector">
+        <option value="en">EN</option>
+        <option value="ar">AR</option>
+        <option value="fr">FR</option>
+        <option value="es">ES</option>
+      </select>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
+    </nav>
+    <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
+  </header>
+
+  <section class="page-header">
+    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80" alt="" class="page-header-bg">
+    <div class="page-header-overlay"></div>
+    <div class="page-header-content">
+      <p data-aos="fade-up">Curated for You</p>
+      <h1 data-aos="fade-up" data-aos-delay="100">Our Menu</h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <span>Explore Categories</span>
+        <h2>A World of Flavours</h2>
+        <p>From Italian classics to exotic Arabic cuisine and handcrafted cocktails — every palate is celebrated.</p>
+      </div>
+
+      <div class="menu-tabs" data-aos="fade-up" id="menuTabs">
+        <button class="menu-tab active" data-category="all">All</button>
+        <button class="menu-tab" data-category="Italian">Italian</button>
+        <button class="menu-tab" data-category="Chinese">Chinese</button>
+        <button class="menu-tab" data-category="Continental">Continental</button>
+        <button class="menu-tab" data-category="Mexican">Mexican</button>
+        <button class="menu-tab" data-category="Arabic">Arabic</button>
+        <button class="menu-tab" data-category="Indian">Indian</button>
+        <button class="menu-tab" data-category="Desserts">Desserts</button>
+        <button class="menu-tab" data-category="Cocktails">Cocktails</button>
+        <button class="menu-tab" data-category="Mocktails">Mocktails</button>
+        <button class="menu-tab" data-category="Wines">Wines</button>
+        <button class="menu-tab" data-category="Beers">Beers</button>
+      </div>
+
+      <div class="menu-grid" id="menuGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-muted);">
+          <i class="fas fa-spinner fa-spin" style="font-size:30px;margin-bottom:15px;"></i>
+          <p>Loading our exquisite menu...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDER MODAL -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <h3 style="font-size:24px;margin-bottom:5px;color:var(--primary);">Place Your Order</h3>
+      <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;" id="modalItemInfo"></p>
+      <form id="orderForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="orderName">Your Name *</label>
+            <input type="text" id="orderName" required placeholder="Enter your name">
+          </div>
+          <div class="form-group">
+            <label for="orderGender">Gender *</label>
+            <select id="orderGender" required>
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="orderQuantity">Quantity *</label>
+          <input type="number" id="orderQuantity" value="1" min="1" max="20" required>
+        </div>
+        <input type="hidden" id="orderItemName">
+        <input type="hidden" id="orderItemPrice">
+        <button type="submit" class="btn btn-primary form-submit">
+          <i class="fas fa-shopping-cart"></i> Place Order
+        </button>
+      </form>
+      <div id="orderFormMessage" style="margin-top:15px;display:none;"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">Royal<span> Oak</span></a>
+          <p>Experience world-class cuisine in an ambiance of refined luxury.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="TripAdvisor"><i class="fab fa-tripadvisor"></i></a>
+          </div>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="menu.html">Menu</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="reservation.html">Reservation</a>
+            <a href="contact.html">Contact</a>
+          </div>
+        </div>
+        <div>
+          <h4>Categories</h4>
+          <div class="footer-links">
+            <a href="menu.html">Italian</a>
+            <a href="menu.html">Chinese</a>
+            <a href="menu.html">Continental</a>
+            <a href="menu.html">Bar & Cocktails</a>
+            <a href="menu.html">Desserts</a>
+          </div>
+        </div>
+        <div>
+          <h4>Contact Info</h4>
+          <div class="footer-links">
+            <a href="#"><i class="fas fa-map-marker-alt" style="margin-right:8px;"></i> 123 Luxury Ave, NYC</a>
+            <a href="#"><i class="fas fa-phone" style="margin-right:8px;"></i> +1 (555) 123-4567</a>
+            <a href="#"><i class="fas fa-envelope" style="margin-right:8px;"></i> info@royaloak.com</a>
+            <a href="#"><i class="fas fa-clock" style="margin-right:8px;"></i> Mon-Sun: 11AM - 1AM</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Royal Oak Restaurant & Bar. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="whatsapp-float">
+    <a href="https://wa.me/15551234567" target="_blank" class="whatsapp-btn" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    <a href="tel:+15551234567" class="call-btn" aria-label="Call"><i class="fas fa-phone"></i></a>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="js/main.js?v=2"></script>
+  <script src="js/animations.js?v=2"></script>
+  <script src="js/menu.js?v=2"></script>
+  <script>AOS.init({ duration: 800, once: true, offset: 100 });</script>
+</body>
+</html>
