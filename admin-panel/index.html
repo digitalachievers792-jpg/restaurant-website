@@ -92,12 +92,12 @@
   </div>
 
   <script>
-    const API_URL = 'http://localhost:5000/api';
+    const API_URL = 'https://restaurant-website-production-e3b2.up.railway.app/api';
     const sampleItems = [
-      { _id: '1', name: 'Truffle Risotto', category: 'Italian', price: 28, image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=400&q=80', description: 'Creamy arborio rice with wild mushrooms and black truffle.' },
-      { _id: '2', name: 'Kung Pao Shrimp', category: 'Chinese', price: 24, image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&q=80', description: 'Wok-seared shrimp with Szechuan peppercorns.' },
-      { _id: '3', name: 'Grilled Lamb Chops', category: 'Continental', price: 38, image: 'https://images.unsplash.com/photo-1514516345957-556ca7d90a29?w=400&q=80', description: 'Herb-crusted lamb racks with rosemary jus.' },
-      { _id: '4', name: 'Butter Chicken', category: 'Indian', price: 22, image: 'https://images.unsplash.com/photo-1588166524941-3b5a88622eb5?w=400&q=80', description: 'Tender chicken in rich creamy tomato sauce.' },
+      { id: '1', name: 'Truffle Risotto', category: 'Italian', price: 28, image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=400&q=80', description: 'Creamy arborio rice with wild mushrooms and black truffle.' },
+      { id: '2', name: 'Kung Pao Shrimp', category: 'Chinese', price: 24, image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&q=80', description: 'Wok-seared shrimp with Szechuan peppercorns.' },
+      { id: '3', name: 'Grilled Lamb Chops', category: 'Continental', price: 38, image: 'https://images.unsplash.com/photo-1514516345957-556ca7d90a29?w=400&q=80', description: 'Herb-crusted lamb racks with rosemary jus.' },
+      { id: '4', name: 'Butter Chicken', category: 'Indian', price: 22, image: 'https://images.unsplash.com/photo-1588166524941-3b5a88622eb5?w=400&q=80', description: 'Tender chicken in rich creamy tomato sauce.' },
     ];
     let currentItems = [];
 
@@ -115,8 +115,8 @@
           <td>$${item.price}</td>
           <td><span class="badge badge-warning">Active</span></td>
           <td>
-            <button class="btn btn-sm btn-primary" onclick="editItem('${item._id}')"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="deleteItem('${item._id}')"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-sm btn-primary" onclick="editItem('${item.id}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="deleteItem('${item.id}')"><i class="fas fa-trash"></i></button>
           </td>
         </tr>
       `).join('');
@@ -141,7 +141,7 @@
       document.getElementById('menuModal').style.display = 'flex';
       if (item) {
         document.getElementById('modalTitle').textContent = 'Edit Menu Item';
-        document.getElementById('editId').value = item._id;
+        document.getElementById('editId').value = item.id;
         document.getElementById('itemName').value = item.name;
         document.getElementById('itemCategory').value = item.category;
         document.getElementById('itemPrice').value = item.price;
@@ -178,8 +178,8 @@
         if (result.success) { closeModal(); fetchItems(); }
         else { throw new Error(result.message); }
       } catch {
-        if (id) { const idx = currentItems.findIndex(i => i._id === id); if (idx > -1) { currentItems[idx] = { ...currentItems[idx], ...data }; } }
-        else { data._id = Date.now().toString(); currentItems.push(data); }
+        if (id) { const idx = currentItems.findIndex(i => i.id === id); if (idx > -1) { currentItems[idx] = { ...currentItems[idx], ...data }; } }
+        else { data.id = Date.now().toString(); currentItems.push(data); }
         localStorage.setItem('adminMenuItems', JSON.stringify(currentItems));
         closeModal(); fetchItems();
       }
@@ -191,14 +191,14 @@
         await fetch(`${API_URL}/menu/${id}`, { method: 'DELETE' });
         fetchItems();
       } catch {
-        currentItems = currentItems.filter(i => i._id !== id);
+        currentItems = currentItems.filter(i => i.id !== id);
         localStorage.setItem('adminMenuItems', JSON.stringify(currentItems));
         fetchItems();
       }
     }
 
     function editItem(id) {
-      const item = currentItems.find(i => i._id === id);
+      const item = currentItems.find(i => i.id === id);
       if (item) openModal(item);
     }
 

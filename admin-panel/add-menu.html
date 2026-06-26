@@ -77,7 +77,7 @@
   </div>
 
   <script>
-    const API_URL = 'http://localhost:5000/api';
+    const API_URL = 'https://restaurant-website-production-e3b2.up.railway.app/api';
 
     document.getElementById('addMenuForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -113,7 +113,7 @@
         }
       } catch {
         let items = JSON.parse(localStorage.getItem('adminMenuItems')) || [];
-        data._id = Date.now().toString();
+        data.id = Date.now().toString();
         items.push(data);
         localStorage.setItem('adminMenuItems', JSON.stringify(items));
         msg.style.display = 'block';

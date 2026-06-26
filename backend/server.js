@@ -43,6 +43,33 @@ app.get('/api/db-info', async (req, res) => {
   }
 });
 
+app.get('/api/db-debug', async (req, res) => {
+  try {
+    const connInfo = await pool.query(`
+      SELECT current_database() as database, 
+             current_schema as schema,
+             current_setting('search_path') as search_path,
+             inet_server_addr() as host,
+             inet_server_port() as port,
+             current_user as user_name
+    `);
+    const tables = await pool.query(`
+      SELECT schemaname, tablename 
+      FROM pg_tables 
+      WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
+    `);
+    const allDatabases = await pool.query(`SELECT datname FROM pg_database WHERE datistemplate = false`);
+    res.json({
+      success: true,
+      connection: connInfo.rows[0],
+      user_tables: tables.rows,
+      all_databases: allDatabases.rows.map(d => d.datname)
+    });
+  } catch (e) {
+    res.json({ success: false, error: e.message });
+  }
+});
+
 app.get('/api/db-check', async (req, res) => {
   try {
     const tables = await pool.query(`SELECT table_name FROM information_schema.tables WHERE table_schema='public'`);

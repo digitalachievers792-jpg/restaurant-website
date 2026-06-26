@@ -29,7 +29,7 @@ async function fetchBookedTables() {
     if (data.success && data.data) {
       bookedTableNumbers = data.data
         .filter(r => r.status !== 'cancelled')
-        .map(r => r.tableNumber);
+        .map(r => r.table_number);
     }
   } catch {
     bookedTableNumbers = [];

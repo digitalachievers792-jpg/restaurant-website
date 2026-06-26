@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://restaurant-website-production-e3b2.up.railway.app/api';
 
 const AdminPanel = {
   init() {
@@ -54,8 +54,8 @@ const AdminPanel = {
         <td>$${item.price}</td>
         <td><span class="badge badge-warning">Active</span></td>
         <td>
-          <button class="btn btn-sm btn-primary" onclick="AdminPanel.editItem('${item._id}')"><i class="fas fa-edit"></i></button>
-          <button class="btn btn-sm btn-danger" onclick="AdminPanel.deleteItem('${item._id}')"><i class="fas fa-trash"></i></button>
+          <button class="btn btn-sm btn-primary" onclick="AdminPanel.editItem('${item.id}')"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="AdminPanel.deleteItem('${item.id}')"><i class="fas fa-trash"></i></button>
         </td>
       </tr>
     `).join('');
@@ -66,14 +66,14 @@ const AdminPanel = {
     try {
       await fetch(`${API_URL}/menu/${id}`, { method: 'DELETE' });
     } catch {
-      this.items = this.items.filter(i => i._id !== id);
+      this.items = this.items.filter(i => i.id !== id);
       this.saveLocalItems();
     }
     this.renderTable();
   },
 
   editItem(id) {
-    const item = this.items.find(i => i._id === id);
+    const item = this.items.find(i => i.id === id);
     if (!item) return;
     this.editingId = id;
     document.getElementById('formTitle').textContent = 'Edit Menu Item';
@@ -103,10 +103,10 @@ const AdminPanel = {
       if (!result.success) throw new Error();
     } catch {
       if (this.editingId) {
-        const idx = this.items.findIndex(i => i._id === this.editingId);
+        const idx = this.items.findIndex(i => i.id === this.editingId);
         if (idx > -1) this.items[idx] = { ...this.items[idx], ...data };
       } else {
-        data._id = Date.now().toString();
+        data.id = Date.now().toString();
         this.items.push(data);
       }
       this.saveLocalItems();
