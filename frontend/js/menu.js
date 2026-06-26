@@ -1,4 +1,4 @@
-const API_URL = '/api';
+const API_URL = 'https://restaurant-website-production-e3b2.up.railway.app/api';
 
 const sampleMenuItems = [
   { _id: '1', name: 'Truffle Risotto', category: 'Italian', price: 28, currency: 'USD', description: 'Creamy arborio rice with wild mushrooms, black truffle, and parmesan.', image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800&q=80', isFeatured: true },

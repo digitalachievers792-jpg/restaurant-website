@@ -1,4 +1,4 @@
-const API_URL = '/api';
+const API_URL = 'https://restaurant-website-production-e3b2.up.railway.app/api';
 
 const tablesGrid = document.getElementById('tablesGrid');
 const selectedTableInfo = document.getElementById('selectedTableInfo');
