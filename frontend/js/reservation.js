@@ -38,38 +38,46 @@ async function fetchBookedTables() {
 
 function renderTables() {
   if (!tablesGrid) return;
-  tablesGrid.innerHTML = '';
-  let currentRow = '';
+  const existingCards = tablesGrid.querySelectorAll('.table-card');
+  if (existingCards.length > 0) {
+    existingCards.forEach(card => {
+      const num = parseInt(card.dataset.table);
+      card.classList.remove('is-booked', 'is-selected');
+      card.style.cursor = 'pointer';
+      const badge = card.querySelector('.table-booked-badge');
+      if (badge) badge.remove();
+      if (bookedTableNumbers.includes(num)) {
+        card.classList.add('is-booked');
+        card.style.cursor = 'not-allowed';
+        const b = document.createElement('span');
+        b.className = 'table-booked-badge';
+        b.style.cssText = 'position:absolute;top:5px;right:8px;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#dc3545;font-weight:600;';
+        b.textContent = 'Booked';
+        card.appendChild(b);
+        card.removeEventListener('click', card._clickHandler);
+      } else {
+        card._clickHandler = () => selectTable(num, card.dataset.seats, card);
+        card.addEventListener('click', card._clickHandler);
+      }
+    });
+    return;
+  }
   tables.forEach((table) => {
-    if (table.row !== currentRow) {
-      currentRow = table.row;
-      const label = document.createElement('div');
-      label.className = 'table-row-label';
-      label.textContent = currentRow;
-      tablesGrid.appendChild(label);
-    }
-
     const card = document.createElement('div');
     card.className = 'table-card';
     card.dataset.table = table.number;
     card.dataset.seats = table.seats;
-
     const isBooked = bookedTableNumbers.includes(table.number);
-    if (isBooked) {
-      card.classList.add('is-booked');
-    }
-
+    if (isBooked) card.classList.add('is-booked');
     const icon = table.seats <= 2 ? 'fa-chair' : table.seats <= 4 ? 'fa-people-arrows' : 'fa-people-group';
     card.innerHTML = `
       <div class="table-card-icon"><i class="fas ${icon}"></i></div>
       <div class="table-card-number">Table ${table.number}</div>
       <div class="table-card-seats">${table.seats} seats</div>
     `;
-
     if (!isBooked) {
       card.addEventListener('click', () => selectTable(table.number, table.seats, card));
     }
-
     tablesGrid.appendChild(card);
   });
 

@@ -9,6 +9,7 @@ plugins = []
 [build]
 publish = "C:\\Users\\Ch Rehman\\Downloads\\Rehman.VS.Projects\\Rehman.Vs.web.trail\\restaurant-website\\frontend"
 publishOrigin = "config"
+base = "C:\\Users\\Ch Rehman\\Downloads\\Rehman.VS.Projects\\Rehman.Vs.web.trail\\restaurant-website\\frontend"
 
 [build.environment]
 
