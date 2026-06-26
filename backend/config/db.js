@@ -70,11 +70,8 @@ async function initDB() {
   await createTables(pool);
   // Also sync tables to other databases for Railway Data tab compatibility
   try {
-    const dbs = await pool.query("SELECT datname FROM pg_database WHERE datistemplate=false AND datname NOT IN ('postgres', 'railway')");
-    const current = await pool.query('SELECT current_database()');
-    const currentDb = current.rows[0].current_database;
-    const otherDbs = [currentDb === 'postgres' ? 'railway' : 'postgres'];
-    for (const dbName of otherDbs) {
+    const allDbs = ['postgres', 'railway'];
+    for (const dbName of allDbs) {
       try {
         const url = new URL(process.env.DATABASE_URL);
         url.pathname = '/' + dbName;
