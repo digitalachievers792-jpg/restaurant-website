@@ -32,6 +32,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Restaurant API is running', timestamp: new Date() });
 });
 
+app.get('/api/db-check', async (req, res) => {
+  try {
+    const tables = await pool.query(`SELECT table_name FROM information_schema.tables WHERE table_schema='public'`);
+    const result = {};
+    for (const t of tables.rows) {
+      const count = await pool.query(`SELECT COUNT(*) FROM "${t.table_name}"`);
+      result[t.table_name] = count.rows[0].count;
+    }
+    res.json({ success: true, tables: result });
+  } catch (e) {
+    res.json({ success: false, error: e.message });
+  }
+});
+
 app.use('/api/menu', require('./routes/menuRoutes'));
 app.use('/api/reservations', require('./routes/reservationRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
