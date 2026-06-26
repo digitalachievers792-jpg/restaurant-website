@@ -1,10 +1,5 @@
-[phases]
-  setup = [
-    "npm install"
-  ]
-
-[phases]
-  build = []
+[phases.setup]
+nixPkgs = ["nodejs", "npm"]
 
 [start]
-  cmd = "node backend/server.js"
+cmd = "node backend/server.js"
