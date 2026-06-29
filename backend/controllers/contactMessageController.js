@@ -30,39 +30,37 @@ exports.getContactMessages = async (req, res) => {
     limit = parseInt(limit) || 10;
     const offset = (page - 1) * limit;
 
-    let query = 'SELECT * FROM contact_messages';
-    const params = [];
-    const conditions = [];
+    const whereClauses = [];
+    const whereParams = [];
 
     if (status && (status === 'read' || status === 'unread')) {
-      params.push(status);
-      conditions.push(`status = $${params.length}`);
+      whereParams.push(status);
+      whereClauses.push(`status = $${whereParams.length}`);
     }
     if (search) {
-      params.push(`%${search}%`);
-      conditions.push(`(name ILIKE $${params.length} OR email ILIKE $${params.length} OR subject ILIKE $${params.length} OR message ILIKE $${params.length})`);
+      whereParams.push(`%${search}%`);
+      whereClauses.push(`(name ILIKE $${whereParams.length} OR email ILIKE $${whereParams.length} OR subject ILIKE $${whereParams.length} OR message ILIKE $${whereParams.length})`);
     }
 
-    if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
-    query += ' ORDER BY created_at DESC';
+    const whereSQL = whereClauses.length ? ' WHERE ' + whereClauses.join(' AND ') : '';
 
-    const countResult = await pool.query(query.replace('SELECT *', 'SELECT COUNT(*) AS total'), params);
+    const countResult = await pool.query(`SELECT COUNT(*) AS total FROM contact_messages${whereSQL}`, whereParams);
     const total = parseInt(countResult.rows[0].total);
 
-    params.push(limit);
-    query += ` LIMIT $${params.length}`;
-    params.push(offset);
-    query += ` OFFSET $${params.length}`;
+    const dataParams = [...whereParams, limit, offset];
+    const dataResult = await pool.query(
+      `SELECT * FROM contact_messages${whereSQL} ORDER BY created_at DESC LIMIT $${whereParams.length + 1} OFFSET $${whereParams.length + 2}`,
+      dataParams
+    );
 
-    const result = await pool.query(query, params);
     res.json({
       success: true,
-      count: result.rows.length,
+      count: dataResult.rows.length,
       total,
       page,
       limit,
       totalPages: Math.ceil(total / limit),
-      data: result.rows,
+      data: dataResult.rows,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
