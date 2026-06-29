@@ -313,6 +313,25 @@
       0% { left: -100%; }
       100% { left: 200%; }
     }
+    .error-message {
+      color: #dc3545;
+      font-size: 11px;
+      margin-top: 4px;
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .error-message.show {
+      display: block;
+    }
+    .form-group.has-error input,
+    .form-group.has-error select,
+    .form-group.has-error textarea {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 1px rgba(220,53,69,0.3);
+    }
+    .form-group.has-error .input-glow {
+      background: linear-gradient(90deg, #dc3545, #ff6b6b, #dc3545);
+    }
     @media(max-width:768px) {
       .animated-form { padding: 30px 20px; }
       .form-row-inline { grid-template-columns: 1fr; gap: 0; }
@@ -373,42 +392,35 @@
                 <label for="contactName"><i class="fas fa-user"></i> Your Name *</label>
                 <input type="text" id="contactName" name="name" placeholder="John Doe">
                 <div class="input-glow"></div>
+                <div class="error-message" id="nameError"></div>
               </div>
 
-              <div class="form-row-inline">
-                <div class="form-group" data-index="1">
-                  <label for="contactAge"><i class="fas fa-calendar"></i> Age *</label>
-                  <input type="number" id="contactAge" name="age" placeholder="25" min="1" max="150">
-                  <div class="input-glow"></div>
-                </div>
-                <div class="form-group" data-index="2">
-                  <label for="contactGender"><i class="fas fa-venus-mars"></i> Gender *</label>
-                  <select id="contactGender" name="gender">
-                    <option value="" disabled selected>Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  <div class="input-glow"></div>
-                </div>
+              <div class="form-group" data-index="1">
+                <label for="contactEmail"><i class="fas fa-envelope"></i> Email *</label>
+                <input type="email" id="contactEmail" name="email" placeholder="yourname@gmail.com">
+                <div class="input-glow"></div>
+                <div class="error-message" id="emailError"></div>
+              </div>
+
+              <div class="form-group" data-index="2">
+                <label for="contactPhone"><i class="fas fa-phone"></i> Phone *</label>
+                <input type="tel" id="contactPhone" name="phone" placeholder="+1 (555) 123-4567">
+                <div class="input-glow"></div>
+                <div class="error-message" id="phoneError"></div>
               </div>
 
               <div class="form-group" data-index="3">
-                <label for="contactCity"><i class="fas fa-city"></i> City *</label>
-                <input type="text" id="contactCity" name="city" placeholder="New York City">
+                <label for="contactSubject"><i class="fas fa-tag"></i> Subject *</label>
+                <input type="text" id="contactSubject" name="subject" placeholder="How can we help you?">
                 <div class="input-glow"></div>
+                <div class="error-message" id="subjectError"></div>
               </div>
 
               <div class="form-group" data-index="4">
-                <label for="contactEmail"><i class="fas fa-envelope"></i> Email (Gmail) *</label>
-                <input type="email" id="contactEmail" name="email" placeholder="yourname@gmail.com">
+                <label for="contactMessage"><i class="fas fa-comment-dots"></i> Message *</label>
+                <textarea id="contactMessage" name="message" placeholder="Tell us more about your inquiry..."></textarea>
                 <div class="input-glow"></div>
-              </div>
-
-              <div class="form-group" data-index="5">
-                <label for="contactDescription"><i class="fas fa-comment-dots"></i> What can we help you with? *</label>
-                <textarea id="contactDescription" name="description" placeholder="Tell us why you're reaching out... We'd love to hear from you!"></textarea>
-                <div class="input-glow"></div>
+                <div class="error-message" id="messageError"></div>
               </div>
 
               <button type="button" class="form-submit" id="formSubmit">
@@ -508,9 +520,9 @@
   <div class="success-popup" id="successPopup">
     <div class="success-popup-content">
       <div class="success-popup-icon"><i class="fas fa-check"></i></div>
-      <h3>Shukriya!</h3>
-      <p>ap ka msg send ho gya hai. Humari team jald hi aap se rabta kare gi.</p>
-      <button class="btn btn-primary" onclick="closePopup()"><i class="fas fa-thumbs-up"></i> Theek Hai</button>
+      <h3>Thank You!</h3>
+      <p>Your message has been sent successfully! Our team will get back to you shortly.</p>
+      <button class="btn btn-primary" onclick="closePopup()"><i class="fas fa-thumbs-up"></i> OK</button>
     </div>
   </div>
 
@@ -537,7 +549,7 @@
       }
     }
 
-    // Popup functions (defined before use)
+    // Popup functions
     function showPopup() {
       document.getElementById('successPopup').classList.add('show');
       document.body.style.overflow = 'hidden';
@@ -547,40 +559,52 @@
       document.body.style.overflow = '';
     }
 
-    // Form validation & submission
+    // Clear all inline errors
+    function clearErrors() {
+      document.querySelectorAll('.error-message').forEach(function(el) {
+        el.textContent = '';
+        el.classList.remove('show');
+      });
+      document.querySelectorAll('.form-group').forEach(function(g) {
+        g.classList.remove('has-error');
+      });
+    }
+
+    // Show inline error for a field
+    function showFieldError(id, message) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = message;
+        el.classList.add('show');
+        el.parentElement.classList.add('has-error');
+      }
+    }
+
+    // Form submission
     document.getElementById('formSubmit').addEventListener('click', async function() {
+      clearErrors();
 
       const name = document.getElementById('contactName').value.trim();
-      const age = document.getElementById('contactAge').value;
-      const gender = document.getElementById('contactGender').value;
-      const city = document.getElementById('contactCity').value.trim();
       const email = document.getElementById('contactEmail').value.trim();
-      const description = document.getElementById('contactDescription').value.trim();
+      const phone = document.getElementById('contactPhone').value.trim();
+      const subject = document.getElementById('contactSubject').value.trim();
+      const message = document.getElementById('contactMessage').value.trim();
 
-      const missing = [];
-      if (!name) missing.push('Name');
-      if (!age) missing.push('Age');
-      if (!gender) missing.push('Gender');
-      if (!city) missing.push('City');
-      if (!email) missing.push('Email');
-      if (!description) missing.push('Description');
+      let hasError = false;
 
-      if (missing.length > 0) {
+      if (!name) { showFieldError('nameError', 'Name is required'); hasError = true; }
+      if (!email) { showFieldError('emailError', 'Email is required'); hasError = true; }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showFieldError('emailError', 'Please enter a valid email address'); hasError = true; }
+      if (!phone) { showFieldError('phoneError', 'Phone is required'); hasError = true; }
+      if (!subject) { showFieldError('subjectError', 'Subject is required'); hasError = true; }
+      if (!message) { showFieldError('messageError', 'Message is required'); hasError = true; }
+
+      if (hasError) {
         Swal.fire({
-          icon: 'warning', title: 'Form Adhoora Hai',
-          text: 'pelhai fields ko fill karai',
+          icon: 'warning', title: 'Incomplete Form',
+          text: 'Please fill in all fields before submitting.',
           background: '#12121a', color: '#f5f5f5',
           confirmButtonColor: '#c9a84c', iconColor: '#c9a84c',
-        });
-        return;
-      }
-
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        Swal.fire({
-          icon: 'error', title: 'Invalid Email',
-          text: 'Please enter a valid email address.',
-          background: '#12121a', color: '#f5f5f5',
-          confirmButtonColor: '#c9a84c', iconColor: '#dc3545',
         });
         return;
       }
@@ -590,10 +614,10 @@
       btn.disabled = true;
 
       try {
-        const res = await fetch(API_URL + '/contact-form', {
+        const res = await fetch(API_URL + '/contact-messages', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, age: parseInt(age), gender, city, email, description }),
+          body: JSON.stringify({ name, email, phone, subject, message }),
         });
         const data = await res.json();
 

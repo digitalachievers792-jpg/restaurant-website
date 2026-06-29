@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | Royal Oak</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh}
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0a0a0f,#1a1a2e)}
+.login-box{background:#12121a;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:40px;width:380px;text-align:center}
+.login-box h1{color:#c9a84c;font-size:28px;margin-bottom:5px;font-family:'Georgia',serif}
+.login-box p{color:#999;font-size:13px;margin-bottom:25px}
+.login-box input{width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:6px;font-size:15px;margin-bottom:15px;outline:none;transition:.3s}
+.login-box input:focus{border-color:#c9a84c}
+.login-box button{width:100%;padding:14px;background:linear-gradient(135deg,#c9a84c,#e8c55a);color:#0a0a0f;border:none;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer;transition:.3s}
+.login-box button:hover{transform:translateY(-2px);box-shadow:0 5px 20px rgba(201,168,76,0.3)}
+.login-error{color:#dc3545;font-size:13px;margin-top:10px;display:none}
+.dashboard{display:none}
+.header{background:#12121a;border-bottom:1px solid rgba(201,168,76,0.2);padding:15px 30px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{color:#c9a84c;font-size:20px;font-family:'Georgia',serif}
+.header h1 span{color:#e0e0e0;font-weight:300;font-size:14px}
+.header-right{display:flex;align-items:center;gap:15px}
+.header-right span{color:#999;font-size:13px}
+.logout-btn{background:transparent;border:1px solid rgba(220,53,69,0.4);color:#dc3545;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:12px;transition:.3s}
+.logout-btn:hover{background:rgba(220,53,69,0.1)}
+.nav-btn{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:#c9a84c;padding:8px 14px;border-radius:5px;cursor:pointer;font-size:12px;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.nav-btn:hover{background:rgba(201,168,76,0.2)}
+.badge-free{background:rgba(108,117,125,0.12);color:#6c757d}
+.container{max-width:1400px;margin:0 auto;padding:25px 30px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:30px}
+.stat-card{background:#12121a;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px 20px;transition:.3s}
+.stat-card:hover{transform:translateY(-3px)}
+.stat-card .stat-icon{font-size:28px;margin-bottom:10px}
+.stat-card .stat-number{font-size:32px;font-weight:700;margin-bottom:3px}
+.stat-card .stat-label{font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px}
+.stat-card.orange .stat-icon,.stat-card.orange .stat-number{color:#c9a84c}
+.stat-card.green .stat-icon,.stat-card.green .stat-number{color:#28a745}
+.stat-card.blue .stat-icon,.stat-card.blue .stat-number{color:#0d6efd}
+.stat-card.red .stat-icon,.stat-card.red .stat-number{color:#dc3545}
+.section-card{background:#12121a;border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:25px;overflow:hidden}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.06);flex-wrap:wrap;gap:10px}
+.section-header h2{font-size:17px;color:#c9a84c}
+.section-header h2 i{margin-right:10px}
+.filter-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.filter-bar input,.filter-bar select{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:8px 12px;border-radius:5px;font-size:12px;outline:none}
+.filter-bar input:focus,.filter-bar select:focus{border-color:#c9a84c}
+.filter-bar input::placeholder{color:#666}
+.table-wrap{overflow-x:auto;padding:0 5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:12px 15px;color:#999;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,0.06);white-space:nowrap}
+td{padding:11px 15px;border-bottom:1px solid rgba(255,255,255,0.03);white-space:nowrap}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.badge-pending{background:rgba(201,168,76,0.15);color:#c9a84c}
+.badge-cancelled{background:rgba(220,53,69,0.12);color:#dc3545}
+.badge-confirmed{background:rgba(40,167,69,0.12);color:#28a745}
+.badge-table{display:inline-block;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:2px 10px;border-radius:4px;font-size:12px;color:#c9a84c;font-weight:600}
+.empty-state{text-align:center;padding:40px;color:#666}
+.empty-state i{font-size:36px;margin-bottom:12px;display:block}
+.loading{text-align:center;padding:30px;color:#666}
+.loading i{font-size:24px;margin-bottom:8px;display:block}
+.refresh-btn{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:#c9a84c;padding:8px 16px;border-radius:5px;cursor:pointer;font-size:12px;transition:.3s;display:flex;align-items:center;gap:6px}
+.refresh-btn:hover{background:rgba(201,168,76,0.2)}
+.refresh-btn i{font-size:11px}
+.last-updated{font-size:11px;color:#666;margin-top:8px;text-align:right;padding:0 22px 12px}
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .container{padding:15px}
+  .header{padding:12px 15px}
+  .stat-card .stat-number{font-size:24px}
+  th,td{padding:8px 10px;font-size:12px}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <h1>Royal Oak</h1>
+    <p>Admin Dashboard</p>
+    <input type="password" id="passwordInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkPassword()">
+    <button onclick="checkPassword()"><i class="fas fa-lock"></i> &nbsp;Login</button>
+    <div class="login-error" id="loginError">Wrong password! Try again.</div>
+  </div>
+</div>
+
+<div class="dashboard" id="dashboard">
+  <div class="header">
+    <h1>Royal Oak <span>| Admin Dashboard</span></h1>
+    <div class="header-right">
+      <span id="currentTime"></span>
+      <a href="admin-history.html" class="nav-btn"><i class="fas fa-history"></i> History</a>
+      <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card orange">
+        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="stat-number" id="statReservations">0</div>
+        <div class="stat-label">Total Reservations</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+        <div class="stat-number" id="statOrders">0</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+        <div class="stat-number" id="statContacts">0</div>
+        <div class="stat-label">Messages</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon"><i class="fas fa-utensils"></i></div>
+        <div class="stat-number" id="statMenuItems">0</div>
+        <div class="stat-label">Menu Items</div>
+      </div>
+      <div class="stat-card" style="border-color:rgba(102,51,153,0.3);">
+        <div class="stat-icon" style="color:#663399;"><i class="fas fa-comment-dots"></i></div>
+        <div class="stat-number" id="statContactMessages" style="color:#663399;">0</div>
+        <div class="stat-label">Contact Messages</div>
+      </div>
+      <div class="stat-card" style="border-color:rgba(23,162,184,0.3);">
+        <div class="stat-icon" style="color:#17a2b8;"><i class="fas fa-address-card"></i></div>
+        <div class="stat-number" id="statContactForms" style="color:#17a2b8;">0</div>
+        <div class="stat-label">Contact Forms</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-calendar-check"></i> Reservations / Table Bookings</h2>
+        <div class="filter-bar">
+          <input type="date" id="filterDate" onchange="loadReservations()">
+          <select id="filterStatus" onchange="loadReservations()">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button class="refresh-btn" onclick="loadReservations()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Table</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Guests</th>
+              <th>Status</th>
+              <th>Booked At</th>
+            </tr>
+          </thead>
+          <tbody id="reservationsBody">
+            <tr><td colspan="10" class="loading"><i class="fas fa-spinner fa-spin"></i>Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="last-updated" id="resLastUpdated"></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-shopping-cart"></i> Orders</h2>
+        <button class="refresh-btn" onclick="loadOrders()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Gender</th>
+              <th>Item</th>
+              <th>Price</th>
+              <th>Qty</th>
+              <th>Total</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody">
+            <tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-spin"></i>Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="last-updated" id="ordLastUpdated"></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-comment-dots"></i> Contact Messages</h2>
+        <div class="filter-bar">
+          <select id="cfilterStatus" onchange="loadContactMessages(1)">
+            <option value="">All Status</option>
+            <option value="unread">Unread</option>
+            <option value="read">Read</option>
+          </select>
+          <input type="text" id="cfilterSearch" placeholder="Search..." onkeydown="if(event.key==='Enter')loadContactMessages(1)">
+          <button class="refresh-btn" onclick="loadContactMessages(1)"><i class="fas fa-search"></i> Search</button>
+          <button class="refresh-btn" onclick="loadContactMessages(1)"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Subject</th>
+              <th>Message</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="contactMessagesBody">
+            <tr><td colspan="9" class="loading"><i class="fas fa-spinner fa-spin"></i>Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 22px;flex-wrap:wrap;gap:10px;">
+        <div class="last-updated" id="cmLastUpdated" style="margin:0;"></div>
+        <div style="display:flex;gap:8px;align-items:center;" id="cmPagination"></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-address-card"></i> Contact Form Submissions</h2>
+        <button class="refresh-btn" onclick="loadContactForms()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Gender</th>
+              <th>City</th>
+              <th>Email</th>
+              <th>Description</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="contactFormsBody">
+            <tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-spin"></i>Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="last-updated" id="cfLastUpdated"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://restaurant-website-production-e3b2.up.railway.app/api';
+const ADMIN_PASSWORD = 'admin123';
+
+function checkPassword() {
+  const pw = document.getElementById('passwordInput').value;
+  if (pw === ADMIN_PASSWORD) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    localStorage.setItem('admin_logged_in', 'true');
+    loadAll();
+    updateClock();
+    setInterval(updateClock, 1000);
+    setInterval(loadAll, 10000);
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    setTimeout(() => document.getElementById('loginError').style.display = 'none', 3000);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('admin_logged_in');
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('passwordInput').value = '';
+}
+
+function updateClock() {
+  document.getElementById('currentTime').textContent = new Date().toLocaleString('en-US', { 
+    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+}
+
+function now() {
+  const d = new Date();
+  return d.toISOString().split('T')[0];
+}
+
+function setFilterDate() {
+  const el = document.getElementById('filterDate');
+  if (!el.value) el.value = now();
+}
+
+async function loadAll() {
+  await Promise.all([loadReservations(), loadOrders(), loadContacts(), loadMenuItems(), loadContactForms(), loadContactMessages()]);
+}
+
+async function loadReservations() {
+  const tbody = document.getElementById('reservationsBody');
+  const date = document.getElementById('filterDate').value;
+  const status = document.getElementById('filterStatus').value;
+  let url = `${API_URL}/reservations`;
+  const params = [];
+  if (date) params.push(`date=${date}`);
+  if (status) params.push(`status=${status}`);
+  if (params.length) url += '?' + params.join('&');
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (data.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><i class="fas fa-inbox"></i>No reservations found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(r => `
+          <tr>
+            <td>#${r.id}</td>
+            <td><strong>${r.name}</strong></td>
+            <td>${r.phone}</td>
+            <td>${r.email || '-'}</td>
+            <td><span class="badge-table">Table ${r.table_number}</span></td>
+            <td>${new Date(r.date).toLocaleDateString()}</td>
+            <td>${r.time}</td>
+            <td>${r.guests}</td>
+            <td><span class="badge badge-${r.display_status === 'free' ? 'free' : r.display_status === 'cancelled' ? 'cancelled' : r.display_status === 'confirmed' ? 'confirmed' : 'pending'}">${r.display_status || r.status}</span></td>
+            <td>${new Date(r.created_at).toLocaleString()}</td>
+          </tr>
+        `).join('');
+      }
+      document.getElementById('statReservations').textContent = data.count;
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="10" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error loading reservations</td></tr>';
+  }
+  document.getElementById('resLastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+}
+
+async function loadOrders() {
+  const tbody = document.getElementById('ordersBody');
+  try {
+    const res = await fetch(`${API_URL}/orders`);
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (data.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i>No orders found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(o => {
+          const total = o.item_price * o.quantity;
+          return `<tr>
+            <td>#${o.id}</td>
+            <td><strong>${o.customer_name}</strong></td>
+            <td>${o.customer_gender}</td>
+            <td>${o.item_name}</td>
+            <td>$${parseFloat(o.item_price).toFixed(2)}</td>
+            <td>${o.quantity}</td>
+            <td><strong>$${total.toFixed(2)}</strong></td>
+            <td>${new Date(o.order_date).toLocaleString()}</td>
+          </tr>`;
+        }).join('');
+      }
+      document.getElementById('statOrders').textContent = data.count;
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="8" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error loading orders</td></tr>';
+  }
+  document.getElementById('ordLastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+}
+
+async function loadContacts() {
+  const tbody = document.getElementById('contactsBody');
+  try {
+    const res = await fetch(`${API_URL}/contact`);
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (data.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i>No messages found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(c => `<tr>
+          <td>#${c.id}</td>
+          <td><strong>${c.name}</strong></td>
+          <td>${c.email}</td>
+          <td>${c.phone || '-'}</td>
+          <td>${c.subject}</td>
+          <td style="max-width:250px;white-space:normal;word-break:break-word;color:#999;font-size:12px;">${c.message}</td>
+          <td>${new Date(c.created_at).toLocaleString()}</td>
+        </tr>`).join('');
+      }
+      document.getElementById('statContacts').textContent = data.count;
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="7" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error loading messages</td></tr>';
+  }
+  document.getElementById('conLastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+}
+
+async function loadMenuItems() {
+  try {
+    const res = await fetch(`${API_URL}/menu`);
+    const data = await res.json();
+    if (data.success && data.data) {
+      document.getElementById('statMenuItems').textContent = data.data.length;
+    }
+  } catch(e) {
+    document.getElementById('statMenuItems').textContent = '?';
+  }
+}
+
+async function loadContactForms() {
+  const tbody = document.getElementById('contactFormsBody');
+  try {
+    const res = await fetch(`${API_URL}/contact-form`);
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (data.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i>No contact form submissions found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(c => `<tr>
+          <td>#${c.id}</td>
+          <td><strong>${c.name}</strong></td>
+          <td>${c.age}</td>
+          <td>${c.gender}</td>
+          <td>${c.city}</td>
+          <td>${c.email}</td>
+          <td style="max-width:250px;white-space:normal;word-break:break-word;color:#999;font-size:12px;">${c.description}</td>
+          <td>${new Date(c.created_at).toLocaleString()}</td>
+        </tr>`).join('');
+      }
+      document.getElementById('statContactForms').textContent = data.count;
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="8" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error loading contact forms</td></tr>';
+  }
+  document.getElementById('cfLastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+}
+
+// Contact Messages with pagination, status filter, search, toggle, delete
+let cmCurrentPage = 1;
+
+async function loadContactMessages(page) {
+  cmCurrentPage = page || 1;
+  const tbody = document.getElementById('contactMessagesBody');
+  const status = document.getElementById('cfilterStatus').value;
+  const search = document.getElementById('cfilterSearch').value;
+  let url = `${API_URL}/contact-messages?page=${cmCurrentPage}&limit=10`;
+  if (status) url += `&status=${status}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (data.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-inbox"></i>No contact messages found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(c => {
+          const statusBadge = c.status === 'read'
+            ? '<span class="badge badge-confirmed">Read</span>'
+            : '<span class="badge badge-pending">Unread</span>';
+          const toggleBtn = c.status === 'read'
+            ? `<button class="refresh-btn" onclick="toggleStatus(${c.id},'unread')" title="Mark as Unread"><i class="fas fa-envelope"></i></button>`
+            : `<button class="refresh-btn" onclick="toggleStatus(${c.id},'read')" title="Mark as Read"><i class="fas fa-envelope-open"></i></button>`;
+          return `<tr>
+            <td>#${c.id}</td>
+            <td><strong>${c.name}</strong></td>
+            <td>${c.email}</td>
+            <td>${c.phone || '-'}</td>
+            <td>${c.subject}</td>
+            <td style="max-width:200px;white-space:normal;word-break:break-word;color:#999;font-size:12px;">${c.message}</td>
+            <td>${new Date(c.created_at).toLocaleString()}</td>
+            <td>${statusBadge}</td>
+            <td style="white-space:nowrap;">
+              ${toggleBtn}
+              <button class="refresh-btn" style="border-color:rgba(220,53,69,0.4);color:#dc3545;" onclick="deleteMessage(${c.id})" title="Delete"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+      document.getElementById('statContactMessages').textContent = data.total || data.count;
+      renderPagination(data);
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="9" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error loading contact messages</td></tr>';
+  }
+  document.getElementById('cmLastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+}
+
+function renderPagination(data) {
+  const container = document.getElementById('cmPagination');
+  if (!data.totalPages || data.totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+  let html = `<span style="font-size:12px;color:#999;">Page ${data.page} of ${data.totalPages}</span>`;
+  if (data.page > 1) {
+    html += `<button class="refresh-btn" onclick="loadContactMessages(${data.page - 1})"><i class="fas fa-chevron-left"></i> Prev</button>`;
+  }
+  if (data.page < data.totalPages) {
+    html += `<button class="refresh-btn" onclick="loadContactMessages(${data.page + 1})">Next <i class="fas fa-chevron-right"></i></button>`;
+  }
+  container.innerHTML = html;
+}
+
+async function toggleStatus(id, status) {
+  try {
+    const res = await fetch(`${API_URL}/contact-messages/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      loadContactMessages(cmCurrentPage);
+    }
+  } catch(e) {
+    alert('Error updating status');
+  }
+}
+
+async function deleteMessage(id) {
+  if (!confirm('Delete this message?')) return;
+  try {
+    const res = await fetch(`${API_URL}/contact-messages/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      loadContactMessages(cmCurrentPage);
+    }
+  } catch(e) {
+    alert('Error deleting message');
+  }
+}
+
+setFilterDate();
+
+if (localStorage.getItem('admin_logged_in') === 'true') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  loadAll();
+  updateClock();
+  setInterval(updateClock, 1000);
+  setInterval(loadAll, 10000);
+}
+</script>
+</body>
+</html>

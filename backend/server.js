@@ -152,6 +152,8 @@ app.use('/api/menu', require('./routes/menuRoutes'));
 app.use('/api/reservations', require('./routes/reservationRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/contact-form', require('./routes/contactFormRoutes'));
+app.use('/api/contact-messages', require('./routes/contactMessageRoutes'));
 
 app.all('/api/*', (req, res) => {
   res.status(404).json({ success: false, message: `Route ${req.method} ${req.originalUrl} not found` });
