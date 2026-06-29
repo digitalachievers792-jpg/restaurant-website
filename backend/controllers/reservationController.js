@@ -41,7 +41,7 @@ exports.createReservation = async (req, res) => {
 
 exports.getReservations = async (req, res) => {
   try {
-    const { date, status } = req.query;
+    const { date, time, status, from, to } = req.query;
     let query = 'SELECT * FROM reservations';
     const params = [];
     const conditions = [];
@@ -50,18 +50,46 @@ exports.getReservations = async (req, res) => {
       params.push(date);
       conditions.push(`date = $${params.length}`);
     }
+    if (from) {
+      params.push(from);
+      conditions.push(`date >= $${params.length}`);
+    }
+    if (to) {
+      params.push(to);
+      conditions.push(`date <= $${params.length}`);
+    }
+    if (time) {
+      params.push(time);
+      conditions.push(`time = $${params.length}`);
+    }
     if (status) {
-      params.push(status);
-      conditions.push(`status = $${params.length}`);
+      if (status === 'free') {
+        params.push('pending');
+        conditions.push(`status = $${params.length}`);
+        conditions.push(`(date < CURRENT_DATE OR (date = CURRENT_DATE AND time <= to_char(CURRENT_TIMESTAMP, 'HH24:MI')))`);
+      } else {
+        params.push(status);
+        conditions.push(`status = $${params.length}`);
+        if (status !== 'cancelled') {
+          conditions.push(`(date > CURRENT_DATE OR (date = CURRENT_DATE AND time > to_char(CURRENT_TIMESTAMP, 'HH24:MI')))`);
+        }
+      }
     }
 
     if (conditions.length > 0) {
       query += ' WHERE ' + conditions.join(' AND ');
     }
-    query += ' ORDER BY date DESC';
+    query += ' ORDER BY date DESC, time ASC';
 
     const result = await pool.query(query, params);
-    res.json({ success: true, count: result.rows.length, data: result.rows });
+    const rows = result.rows.map(r => ({
+      ...r,
+      display_status: r.status === 'cancelled' ? 'cancelled' :
+        (new Date(r.date) < new Date(new Date().toDateString()) ||
+         (r.date === new Date().toISOString().split('T')[0] && r.time <= new Date().toTimeString().slice(0, 5)))
+        ? 'free' : r.status,
+    }));
+    res.json({ success: true, count: rows.length, data: rows });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Google Fonts loaded via <link> in HTML files */
 
 :root {
   --primary: #c9a84c;
@@ -57,7 +57,7 @@ a {
 
 ul { list-style: none; }
 
-img { max-width: 100%; height: auto; }
+img { max-width: 100%; height: auto; image-orientation: from-image; }
 
 .container {
   max-width: 1200px;
@@ -68,6 +68,8 @@ img { max-width: 100%; height: auto; }
 .section {
   padding: 100px 0;
   position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: 600px;
 }
 
 .section-title {
@@ -171,7 +173,8 @@ img { max-width: 100%; height: auto; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: var(--transition);
+  transition: padding 0.4s ease, background 0.4s ease;
+  will-change: background;
 }
 
 .header.scrolled {
@@ -310,6 +313,7 @@ img { max-width: 100%; height: auto; }
   border-radius: 50%;
   animation: floatParticle 15s infinite;
   opacity: 0.3;
+  will-change: transform;
 }
 
 @keyframes floatParticle {
@@ -325,6 +329,7 @@ img { max-width: 100%; height: auto; }
   text-align: center;
   max-width: 900px;
   padding: 0 20px;
+  will-change: transform, opacity;
 }
 
 .hero-subtitle {
@@ -583,6 +588,7 @@ img { max-width: 100%; height: auto; }
   height: 220px;
   overflow: hidden;
   position: relative;
+  aspect-ratio: 16 / 10;
 }
 
 .menu-item-image img {
@@ -630,6 +636,12 @@ img { max-width: 100%; height: auto; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.menu-order-btn {
+  padding: 8px 16px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .menu-item-price {
@@ -1260,7 +1272,7 @@ img { max-width: 100%; height: auto; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 15px;
-  max-width: 700px;
+  max-width: 100%;
   margin: 0 auto;
   position: relative;
 }
@@ -1537,15 +1549,18 @@ img { max-width: 100%; height: auto; }
 .awards-strip {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 50px;
+  align-items: flex-start;
+  gap: 10px;
   flex-wrap: wrap;
   padding: 20px 0;
 }
 
 .award-item {
   text-align: center;
-  padding: 20px;
+  padding: 15px 10px;
+  flex: 1 1 auto;
+  min-width: 100px;
+  max-width: 160px;
 }
 
 .award-item i {
@@ -1661,6 +1676,13 @@ img { max-width: 100%; height: auto; }
   color: var(--text-light);
 }
 
+/* ===== BAR SECTION GRID ===== */
+.bar-section-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
 /* ===== TABLE CARD HOVER GLOW ===== */
 .table-card:hover:not(.is-booked):not(.is-selected) {
   transform: translateY(-8px) scale(1.03);
@@ -1670,10 +1692,4 @@ img { max-width: 100%; height: auto; }
 .table-card.is-selected {
   transform: translateY(-8px) scale(1.03);
   box-shadow: 0 8px 30px rgba(201, 168, 76, 0.4), 0 0 20px rgba(201, 168, 76, 0.2);
-  animation: pulseGold 2s infinite;
-}
-
-@keyframes pulseGold {
-  0%, 100% { box-shadow: 0 8px 30px rgba(201, 168, 76, 0.4), 0 0 20px rgba(201, 168, 76, 0.2); }
-  50% { box-shadow: 0 8px 40px rgba(201, 168, 76, 0.6), 0 0 30px rgba(201, 168, 76, 0.3); }
 }

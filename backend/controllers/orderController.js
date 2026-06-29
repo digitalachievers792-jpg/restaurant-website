@@ -25,7 +25,15 @@ exports.createOrder = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM orders ORDER BY order_date DESC');
+    const { from, to } = req.query;
+    let query = 'SELECT * FROM orders';
+    const params = [];
+    const conditions = [];
+    if (from) { params.push(from); conditions.push(`order_date >= $${params.length}`); }
+    if (to) { params.push(to); conditions.push(`order_date <= $${params.length}::date + interval '1 day'`); }
+    if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
+    query += ' ORDER BY order_date DESC';
+    const result = await pool.query(query, params);
     res.json({ success: true, count: result.rows.length, data: result.rows });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

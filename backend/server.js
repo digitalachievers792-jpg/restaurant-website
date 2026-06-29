@@ -19,14 +19,40 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const frontendPath = path.join(__dirname, '..', 'frontend');
-app.use(express.static(frontendPath, {
-  setHeaders: (res) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
+// Compression middleware (built-in to Express 4.16+)
+app.use(express.static(path.join(__dirname, '..', 'frontend'), {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    // Cache HTML files briefly for freshness
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate');
+      return;
+    }
+
+    // Cache CSS/JS with versioning for 1 year (immutable)
+    if (filePath.match(/\.(css|js)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      return;
+    }
+
+    // Cache images for 1 year
+    if (filePath.match(/\.(jpg|jpeg|png|gif|webp|svg|ico|woff|woff2|ttf|eot)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      return;
+    }
+
+    // Default cache for other assets
+    res.setHeader('Cache-Control', 'public, max-age=86400');
   }
 }));
+
+// API routes - no cache for dynamic data
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Restaurant API is running', timestamp: new Date() });
@@ -165,7 +191,7 @@ app.use((err, req, res, next) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
+  res.sendFile(path.join(path.join(__dirname, '..', 'frontend'), 'index.html'));
 });
 
 initDB().then(() => {
@@ -176,5 +202,3 @@ initDB().then(() => {
   console.error('Failed to initialize database:', err.message);
   process.exit(1);
 });
-
-// trigger redeploy

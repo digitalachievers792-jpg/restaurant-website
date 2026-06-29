@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0f">
   <title>Contact | Royal Oak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <link rel="stylesheet" href="css/style.css?v=3">
-  <link rel="stylesheet" href="css/animations.css?v=3">
-  <link rel="stylesheet" href="css/responsive.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/animations.css?v=4">
+  <link rel="stylesheet" href="css/responsive.css?v=4">
   <style>
     .contact-form-wrapper {
       position: relative;
@@ -137,10 +143,11 @@
     .animated-form .form-submit {
       width: 100%;
       padding: 18px 35px;
-      background: linear-gradient(135deg, #c9a84c, #e8c55a, #c9a84c);
+      background-color: #c9a84c;
+      background-image: linear-gradient(135deg, #c9a84c, #e8c55a, #c9a84c);
       background-size: 200% 200%;
-      color: #0a0a0f;
-      border: none;
+      color: #fff;
+      border: 1px solid rgba(255,215,0,0.3);
       border-radius: 10px;
       font-size: 15px;
       font-weight: 700;
@@ -149,19 +156,31 @@
       cursor: pointer;
       transition: all 0.5s ease;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 12px;
+      opacity: 1;
+      visibility: visible;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
     .animated-form .form-submit:hover {
       background-position: right center;
       transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 12px 40px rgba(201,168,76,0.35);
+      box-shadow: 0 12px 40px rgba(201,168,76,0.5);
+      border-color: rgba(255,215,0,0.6);
     }
     .animated-form .form-submit:active {
       transform: translateY(-1px) scale(0.98);
+    }
+    .animated-form .form-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    #formSubmit {
+      opacity: 1 !important;
+      visibility: visible !important;
     }
     .animated-form .form-submit::before {
       content: '';
@@ -335,6 +354,10 @@
     @media(max-width:768px) {
       .animated-form { padding: 30px 20px; }
       .form-row-inline { grid-template-columns: 1fr; gap: 0; }
+      .contact-form-wrapper::before { animation: none; }
+      .floating-particles { display: none; }
+      .form-shimmer { animation: none; display: none; }
+      .animated-form:hover { box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
     }
   </style>
 </head>
@@ -362,6 +385,9 @@
       </select>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
     </nav>
+    <button class="theme-toggle" id="themeToggleMobile" aria-label="Toggle theme" style="display:none;">
+      <i class="fas fa-moon"></i>
+    </button>
     <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
   </header>
 
@@ -526,17 +552,17 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="js/main.js?v=3"></script>
-  <script src="js/animations.js?v=3"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  <script src="js/main.js?v=4" defer></script>
+  <script src="js/animations.js?v=4" defer></script>
   <script>
-    const API_URL = 'https://restaurant-website-production-e3b2.up.railway.app/api';
+    const API_URL = window.location.hostname.includes('railway.app') ? '/api' : 'https://restaurant-website-production-e3b2.up.railway.app/api';
 
     // Floating particles
-    const particlesContainer = document.getElementById('formParticles');
-    if (particlesContainer) {
+    var formParticlesEl = document.getElementById('formParticles');
+    if (formParticlesEl) {
       for (let i = 0; i < 8; i++) {
         const p = document.createElement('div');
         p.className = 'floating-particle';
@@ -545,17 +571,56 @@
         p.style.animationDuration = (5 + Math.random() * 5) + 's';
         p.style.width = (2 + Math.random() * 4) + 'px';
         p.style.height = p.style.width;
-        particlesContainer.appendChild(p);
+        formParticlesEl.appendChild(p);
       }
     }
 
+    // Wrapper for Swal.fire with fallback if CDN blocked
+    function showAlert(opts) {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire(opts);
+      } else {
+        var popupMsg = document.getElementById('successPopup');
+        if (!popupMsg) return;
+        var h3 = popupMsg.querySelector('h3');
+        var p = popupMsg.querySelector('p');
+        var iconWrap = popupMsg.querySelector('.success-popup-icon');
+        if (opts.icon === 'warning' || opts.icon === 'error') {
+          if (h3) h3.textContent = opts.title;
+          if (p) p.textContent = opts.text;
+          if (iconWrap) {
+            var i = iconWrap.querySelector('i');
+            if (i) i.className = 'fas fa-exclamation-triangle';
+            iconWrap.style.color = opts.icon === 'error' ? '#dc3545' : '#c9a84c';
+            iconWrap.style.borderColor = 'rgba(220,53,69,0.3)';
+          }
+        } else {
+          if (h3) h3.textContent = opts.title || 'Thank You!';
+          if (p) p.textContent = opts.text || 'Your message has been sent successfully!';
+        }
+        showPopup();
+      }
+    }
     // Popup functions
     function showPopup() {
       document.getElementById('successPopup').classList.add('show');
       document.body.style.overflow = 'hidden';
     }
     function closePopup() {
-      document.getElementById('successPopup').classList.remove('show');
+      var popup = document.getElementById('successPopup');
+      if (!popup) return;
+      popup.classList.remove('show');
+      var h3 = popup.querySelector('h3');
+      var p = popup.querySelector('p');
+      var iconWrap = popup.querySelector('.success-popup-icon');
+      if (h3) h3.textContent = 'Thank You!';
+      if (p) p.textContent = 'Your message has been sent successfully! Our team will get back to you shortly.';
+      if (iconWrap) {
+        var i = iconWrap.querySelector('i');
+        if (i) i.className = 'fas fa-check';
+        iconWrap.style.color = '#28a745';
+        iconWrap.style.borderColor = 'rgba(40,167,69,0.3)';
+      }
       document.body.style.overflow = '';
     }
 
@@ -600,7 +665,7 @@
       if (!message) { showFieldError('messageError', 'Message is required'); hasError = true; }
 
       if (hasError) {
-        Swal.fire({
+        showAlert({
           icon: 'warning', title: 'Incomplete Form',
           text: 'Please fill in all fields before submitting.',
           background: '#12121a', color: '#f5f5f5',
@@ -614,27 +679,38 @@
       btn.disabled = true;
 
       try {
+        const controller = new AbortController();
+        const timeout = setTimeout(function() { controller.abort(); }, 30000);
         const res = await fetch(API_URL + '/contact-messages', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, phone, subject, message }),
+          signal: controller.signal,
         });
+        clearTimeout(timeout);
         const data = await res.json();
 
         if (data.success) {
           document.getElementById('contactForm').reset();
-          showPopup();
+          showAlert({
+            icon: 'success', title: 'Thank You!',
+            text: 'Your message has been sent successfully! Our team will get back to you shortly.',
+          });
         } else {
-          Swal.fire({
+          showAlert({
             icon: 'error', title: 'Oops!',
             text: data.message || 'Something went wrong. Please try again.',
             background: '#12121a', color: '#f5f5f5',
             confirmButtonColor: '#c9a84c', iconColor: '#dc3545',
           });
         }
-      } catch {
-        document.getElementById('contactForm').reset();
-        showPopup();
+      } catch (err) {
+        showAlert({
+          icon: 'error', title: 'Network Error',
+          text: 'Could not reach the server. Please check your connection and try again.',
+          background: '#12121a', color: '#f5f5f5',
+          confirmButtonColor: '#c9a84c', iconColor: '#dc3545',
+        });
       }
 
       btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
@@ -645,12 +721,10 @@
     try {
       function animateFormFields() {
         const formGroups = document.querySelectorAll('.animated-form .form-group');
-        const submitBtn = document.getElementById('formSubmit');
         const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.6 } });
         formGroups.forEach(function(group, i) {
-          tl.from(group, { opacity: 0, y: 40, scale: 0.95, duration: 0.5 }, i * 0.1);
+          tl.from(group, { opacity: 0, y: 40, scale: 0.95, duration: 0.5, clearProps: 'all' }, i * 0.1);
         });
-        tl.from(submitBtn, { opacity: 0, y: 30, scale: 0.9, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.2');
       }
       document.addEventListener('DOMContentLoaded', animateFormFields);
     } catch(e) { console.log('GSAP animation skipped'); }

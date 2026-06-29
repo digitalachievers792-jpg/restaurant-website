@@ -23,6 +23,23 @@
   }
 }
 
+/* ===== GLOBAL MOBILE OVERFLOW PROTECTION ===== */
+@media screen and (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  img, video, iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  iframe {
+    display: block;
+  }
+}
+
 /* ===== TABLET (768px - 1024px) ===== */
 @media screen and (max-width: 1024px) {
   .about-grid {
@@ -64,6 +81,17 @@
   .gallery-item:nth-child(4) {
     grid-column: span 1;
   }
+
+  /* About page chef section */
+  .about-chef-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  /* About page ambiance grid */
+  .ambiance-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
 
 /* ===== MOBILE (< 768px) ===== */
@@ -73,15 +101,19 @@
     top: 0;
     right: -100%;
     width: 80%;
-    max-width: 350px;
+    max-width: 320px;
     height: 100vh;
+    height: 100dvh;
     background: rgba(10, 10, 15, 0.98);
     backdrop-filter: blur(20px);
     flex-direction: column;
     justify-content: center;
-    gap: 25px;
+    gap: 8px;
     transition: var(--transition);
     z-index: 999;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 60px 30px 30px;
   }
 
   [data-theme="light"] .nav-links {
@@ -94,10 +126,35 @@
 
   .nav-links a {
     font-size: 16px;
+    padding: 10px 0;
+  }
+
+  .nav-links .lang-selector {
+    margin: 10px auto 0;
+    width: fit-content;
   }
 
   .nav-toggle {
     display: flex;
+  }
+
+  /* Mobile nav overlay */
+  .nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .nav-overlay.active {
+    display: block;
+    opacity: 1;
   }
 
   .header {
@@ -116,12 +173,16 @@
     font-size: 28px;
   }
 
+  .hero {
+    min-height: 550px;
+  }
+
   .hero-title {
-    font-size: 36px;
+    font-size: 34px;
   }
 
   .hero-title-sub {
-    font-size: 16px;
+    font-size: 15px;
     letter-spacing: 2px;
   }
 
@@ -145,11 +206,23 @@
 
   .menu-tabs {
     gap: 5px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .menu-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .menu-tab {
-    padding: 8px 15px;
-    font-size: 10px;
+    padding: 10px 14px;
+    font-size: 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .gallery-grid {
@@ -180,7 +253,7 @@
 
   .page-header {
     height: 40vh;
-    min-height: 300px;
+    min-height: 250px;
   }
 
   .page-header-content h1 {
@@ -215,9 +288,9 @@
   }
 
   .whatsapp-float a {
-    width: 45px;
-    height: 45px;
-    font-size: 22px;
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
   }
 
   .whatsapp-float {
@@ -228,12 +301,185 @@
   .section-title {
     margin-bottom: 40px;
   }
+
+  /* Form inputs tap-friendly on mobile */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    min-height: 48px;
+    padding: 14px 16px;
+    font-size: 16px;
+  }
+
+  /* About page chef section stacks */
+  .about-chef-grid {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+  }
+
+  .about-chef-grid img {
+    height: 300px !important;
+  }
+
+  /* About chef heading scales */
+  .about-chef-grid h2 {
+    font-size: 28px !important;
+  }
+
+  .about-chef-grid h3 {
+    font-size: 24px !important;
+  }
+
+  /* About page ambiance grid */
+  .ambiance-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+
+  .ambiance-grid > div {
+    height: 200px !important;
+  }
+
+  /* Bar section grid */
+  .bar-section-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+
+  /* CTA section */
+  .cta-content h2 {
+    font-size: 28px !important;
+  }
+
+  /* Table layout */
+  .table-floor-plan {
+    padding: 15px;
+  }
+
+  .tables-grid {
+    gap: 8px;
+  }
+
+  .table-card {
+    padding: 12px 6px;
+  }
+
+  .table-card-icon {
+    font-size: 20px;
+  }
+
+  .table-card-number {
+    font-size: 14px;
+  }
+
+  .table-card-seats {
+    font-size: 10px;
+  }
+
+  /* Table legend smaller and wrapping */
+  .table-legend {
+    gap: 10px;
+    font-size: 10px;
+  }
+
+  /* Contact map */
+  .contact-map {
+    height: 250px;
+  }
+
+  /* CTA section responsive */
+  .cta-heading {
+    font-size: 28px !important;
+  }
+
+  .cta-desc {
+    font-size: 14px;
+  }
+
+  /* About ambiance large image */
+  .ambiance-large {
+    height: 250px;
+  }
+
+  /* Contact form heading */
+  .animated-form .section-title h2 {
+    font-size: 24px;
+  }
+
+  /* Footer links touch targets */
+  .footer-links a {
+    padding: 8px 0;
+  }
+
+  /* Features/events gap */
+  .features-grid {
+    gap: 15px;
+  }
+
+  .events-grid {
+    gap: 15px;
+  }
+
+  /* Reduce animations on mobile */
+  .particle {
+    display: none;
+  }
+
+  .whatsapp-float a {
+    animation: none;
+  }
+}
+
+/* ===== BAR SECTION & CTA BACKGROUNDS ===== */
+.bar-section {
+  background: linear-gradient(135deg, rgba(10,10,15,0.97), rgba(26,26,46,0.95)),
+    url('https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=1600&q=80') center/cover scroll;
+}
+
+.cta-section {
+  background: linear-gradient(135deg, rgba(10,10,15,0.95), rgba(26,26,46,0.9)),
+    url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80') center/cover scroll;
+  text-align: center;
+}
+
+.cta-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 15px;
+}
+
+.cta-heading {
+  font-size: 42px;
+  color: var(--text-light);
+  margin-bottom: 20px;
+}
+
+.cta-desc {
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto 30px;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* ===== ABOUT AMBIANCE LARGE IMAGE ===== */
+.ambiance-large {
+  height: 400px;
 }
 
 /* ===== SMALL MOBILE (< 480px) ===== */
 @media screen and (max-width: 480px) {
+  .hero {
+    min-height: 500px;
+  }
+
   .hero-title {
-    font-size: 28px;
+    font-size: 26px;
+    line-height: 1.2;
   }
 
   .hero-title-sub {
@@ -250,6 +496,11 @@
 
   .gallery-item {
     height: 160px;
+    aspect-ratio: auto;
+  }
+
+  .home-gallery-preview .gallery-item {
+    aspect-ratio: auto;
   }
 
   .about-image img {
@@ -263,10 +514,112 @@
   .hero-buttons {
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .container {
     padding: 0 15px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+
+  .cta-heading {
+    font-size: 24px !important;
+  }
+
+  .ambiance-large {
+    height: 200px;
+  }
+
+  .awards-strip {
+    gap: 15px;
+  }
+
+  .award-item {
+    padding: 12px 8px;
+  }
+
+  .award-item i {
+    font-size: 30px;
+  }
+
+  /* Reservation form full width on small mobile */
+  .reservation-form {
+    padding: 20px 15px;
+  }
+
+  /* Animated form tighter padding */
+  .animated-form {
+    padding: 25px 18px !important;
+  }
+
+  /* Modal responsive */
+  .modal-content {
+    padding: 25px 20px;
+    margin: 10px;
+    width: calc(100% - 20px);
+  }
+
+  /* Nav links larger touch targets */
+  .nav-links a {
+    font-size: 16px;
+    padding: 12px 0;
+  }
+
+  /* Footer links larger touch targets */
+  .footer-links a {
+    padding: 10px 0;
+    font-size: 14px;
+  }
+
+  /* Menu tabs larger touch targets */
+  .menu-tab {
+    padding: 10px 16px;
+    font-size: 11px;
+  }
+
+  /* Section title h2 better sizing */
+  .section-title h2 {
+    font-size: 26px;
+    line-height: 1.3;
+  }
+
+  /* About chef heading scales down */
+  .about-chef-grid h2 {
+    font-size: 26px !important;
+  }
+
+  /* About chef stats scale down */
+  .about-chef-grid h3 {
+    font-size: 22px !important;
+  }
+
+  /* Table cards text sizing */
+  .table-card-number {
+    font-size: 13px;
+  }
+
+  .table-card-seats {
+    font-size: 10px;
+  }
+
+  /* Awards text readable */
+  .award-item p {
+    font-size: 10px;
   }
 }
 
@@ -274,25 +627,39 @@
 @media screen and (max-width: 768px) {
   .tables-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
   .table-card {
-    padding: 15px 8px;
+    padding: 12px 6px;
   }
-  .table-card-icon { font-size: 22px; }
-  .table-card-number { font-size: 15px; }
-  .table-floor-plan { padding: 20px; }
-  .table-legend { gap: 12px; font-size: 10px; flex-wrap: wrap; }
+  .table-card-icon { font-size: 20px; }
+  .table-card-number { font-size: 14px; }
+  .table-card-seats { font-size: 10px; }
+  .table-floor-plan { padding: 15px; }
+  .table-legend { gap: 10px; font-size: 10px; flex-wrap: wrap; }
   .home-gallery-preview { grid-template-columns: 1fr; }
   .home-gallery-preview .gallery-item { height: 200px !important; }
+  .menu-order-btn {
+    padding: 10px 16px !important;
+    font-size: 12px !important;
+    min-height: 40px;
+  }
 }
 
 @media screen and (max-width: 480px) {
   .tables-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
   }
   .table-card-number { font-size: 13px; }
   .table-card-seats { font-size: 9px; }
+  .table-card { padding: 10px 4px; }
+  .table-card-icon { font-size: 18px; }
+  .menu-order-btn {
+    padding: 12px 18px !important;
+    font-size: 12px !important;
+    min-height: 44px;
+  }
 }
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
@@ -305,16 +672,8 @@
 }
 
 @media screen and (max-width: 1024px) {
-  .bar-section-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .events-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media screen and (max-width: 480px) {
-  .bar-section-grid { grid-template-columns: 1fr !important; }
-  .features-grid { grid-template-columns: 1fr; }
-  .events-grid { grid-template-columns: 1fr; }
-  .awards-strip { gap: 20px; }
 }
 
 /* ===== HOVER DEVICES ===== */
@@ -334,5 +693,39 @@
 
   .btn:hover {
     transform: none;
+  }
+
+  .feature-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .event-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .footer-social a:hover {
+    transform: none;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .particle {
+    display: none;
+  }
+
+  .hero-content {
+    will-change: auto;
   }
 }

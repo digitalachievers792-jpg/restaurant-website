@@ -5,8 +5,13 @@ const selectedTableInfo = document.getElementById('selectedTableInfo');
 const selectedTableDisplay = document.getElementById('selectedTableDisplay');
 const selectedTableCapacity = document.getElementById('selectedTableCapacity');
 const selectedTableInput = document.getElementById('selectedTable');
+const dateInput = document.getElementById('date');
+const timeInput = document.getElementById('time');
+const guestsInput = document.getElementById('guests');
 let currentlySelectedTable = null;
-let bookedTableNumbers = [];
+let bookings = [];
+let selectedDate = '';
+let selectedTime = '';
 
 const urlParams = new URLSearchParams(window.location.search);
 const preselectedTable = urlParams.get('table');
@@ -22,18 +27,37 @@ const tables = [
   { number: 8, seats: 6, row: 'Main Floor' },
 ];
 
-async function fetchBookedTables() {
+function getCurrentTime() {
+  const d = new Date();
+  return d.toTimeString().slice(0, 5);
+}
+
+function getDateString(d) {
+  return d.toISOString().split('T')[0];
+}
+
+async function fetchBookings(date) {
   try {
-    const res = await fetch(`${API_URL}/reservations`);
+    const res = await fetch(`${API_URL}/reservations?date=${date}`);
     const data = await res.json();
     if (data.success && data.data) {
-      bookedTableNumbers = data.data
-        .filter(r => r.status !== 'cancelled')
-        .map(r => r.table_number);
+      bookings = data.data.filter(r => r.status !== 'cancelled');
+    } else {
+      bookings = [];
     }
   } catch {
-    bookedTableNumbers = [];
+    bookings = [];
   }
+}
+
+function isTableBookedAt(tableNumber, time) {
+  const today = getDateString(new Date());
+  const now = getCurrentTime();
+  return bookings.some(b => {
+    if (b.table_number !== tableNumber || b.time !== time) return false;
+    if (b.date === today && b.time <= now) return false;
+    return true;
+  });
 }
 
 function renderTables() {
@@ -46,7 +70,7 @@ function renderTables() {
       card.style.cursor = 'pointer';
       const badge = card.querySelector('.table-booked-badge');
       if (badge) badge.remove();
-      if (bookedTableNumbers.includes(num)) {
+      if (selectedDate && selectedTime && isTableBookedAt(num, selectedTime)) {
         card.classList.add('is-booked');
         card.style.cursor = 'not-allowed';
         const b = document.createElement('span');
@@ -56,42 +80,54 @@ function renderTables() {
         card.appendChild(b);
         card.removeEventListener('click', card._clickHandler);
       } else {
-        card._clickHandler = () => selectTable(num, card.dataset.seats, card);
+        card._clickHandler = () => selectTable(num, parseInt(card.dataset.seats), card);
         card.addEventListener('click', card._clickHandler);
       }
     });
     return;
   }
-  tables.forEach((table) => {
+  tables.forEach(t => {
     const card = document.createElement('div');
     card.className = 'table-card';
-    card.dataset.table = table.number;
-    card.dataset.seats = table.seats;
-    const isBooked = bookedTableNumbers.includes(table.number);
+    card.dataset.table = t.number;
+    card.dataset.seats = t.seats;
+    const isBooked = selectedDate && selectedTime && isTableBookedAt(t.number, selectedTime);
     if (isBooked) card.classList.add('is-booked');
-    const icon = table.seats <= 2 ? 'fa-chair' : table.seats <= 4 ? 'fa-people-arrows' : 'fa-people-group';
+    const icon = t.seats <= 2 ? 'fa-chair' : t.seats <= 4 ? 'fa-people-arrows' : 'fa-people-group';
     card.innerHTML = `
       <div class="table-card-icon"><i class="fas ${icon}"></i></div>
-      <div class="table-card-number">Table ${table.number}</div>
-      <div class="table-card-seats">${table.seats} seats</div>
+      <div class="table-card-number">Table ${t.number}</div>
+      <div class="table-card-seats">${t.seats} seats</div>
     `;
     if (!isBooked) {
-      card.addEventListener('click', () => selectTable(table.number, table.seats, card));
+      card.addEventListener('click', () => selectTable(t.number, t.seats, card));
     }
     tablesGrid.appendChild(card);
   });
-
   if (preselectedTable) {
     const num = parseInt(preselectedTable);
     const target = tablesGrid.querySelector(`.table-card[data-table="${num}"]`);
     const t = tables.find(t => t.number === num);
-    if (target && t && !bookedTableNumbers.includes(num)) {
+    if (target && t && !target.classList.contains('is-booked')) {
       selectTable(num, t.seats, target);
     }
   }
 }
 
 function selectTable(number, seats, element) {
+  if (!selectedTime) {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: 'info',
+        title: 'Select Time First',
+        text: 'Please select a date and time before choosing a table.',
+        background: '#12121a',
+        color: '#f5f5f5',
+        confirmButtonColor: '#c9a84c',
+      });
+    }
+    return;
+  }
   document.querySelectorAll('.table-card.is-selected').forEach(el => el.classList.remove('is-selected'));
   element.classList.add('is-selected');
   currentlySelectedTable = number;
@@ -99,19 +135,52 @@ function selectTable(number, seats, element) {
   selectedTableDisplay.textContent = `Table ${number}`;
   selectedTableCapacity.textContent = seats;
   selectedTableInfo.style.display = 'block';
-  document.getElementById('guests').value = Math.min(seats, 8);
+  if (guestsInput) guestsInput.value = Math.min(seats, 8);
+  selectedTableInfo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function onDateOrTimeChange() {
+  selectedDate = dateInput ? dateInput.value : '';
+  selectedTime = timeInput ? timeInput.value : '';
+  if (!selectedDate) return;
+  await fetchBookings(selectedDate);
+  renderTables();
+  if (!selectedTime) {
+    selectedTableInfo.style.display = 'none';
+    document.querySelectorAll('.table-card.is-selected').forEach(el => el.classList.remove('is-selected'));
+    currentlySelectedTable = null;
+    selectedTableInput.value = '';
+  }
+}
+
+if (dateInput) {
+  dateInput.setAttribute('min', getDateString(new Date()));
+  if (!dateInput.value) dateInput.value = getDateString(new Date());
+  selectedDate = dateInput.value;
+  dateInput.addEventListener('change', onDateOrTimeChange);
+}
+
+if (timeInput) {
+  timeInput.addEventListener('change', onDateOrTimeChange);
 }
 
 const reservationForm = document.getElementById('reservationForm');
-
 if (reservationForm) {
-  const dateInput = document.getElementById('date');
-  if (dateInput) {
-    dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
-  }
-
   reservationForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    if (!selectedTime) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Select Time',
+        text: 'Please select a date and time first!',
+        background: '#12121a',
+        color: '#f5f5f5',
+        confirmButtonColor: '#c9a84c',
+        iconColor: '#c9a84c',
+      });
+      return;
+    }
 
     if (!currentlySelectedTable) {
       Swal.fire({
@@ -126,6 +195,20 @@ if (reservationForm) {
       return;
     }
 
+    if (isTableBookedAt(currentlySelectedTable, selectedTime)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Table Just Got Booked',
+        text: 'Sorry, this table was just booked by someone else. Please select another.',
+        background: '#12121a',
+        color: '#f5f5f5',
+        confirmButtonColor: '#c9a84c',
+        iconColor: '#dc3545',
+      });
+      await onDateOrTimeChange();
+      return;
+    }
+
     const submitBtn = reservationForm.querySelector('.form-submit');
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking Table...';
     submitBtn.disabled = true;
@@ -134,8 +217,8 @@ if (reservationForm) {
       name: document.getElementById('name').value.trim(),
       email: document.getElementById('email').value.trim() || undefined,
       phone: document.getElementById('phone').value.trim(),
-      date: document.getElementById('date').value,
-      time: document.getElementById('time').value,
+      date: selectedDate,
+      time: selectedTime,
       guests: parseInt(document.getElementById('guests').value),
       tableNumber: currentlySelectedTable,
       specialRequests: document.getElementById('specialRequests').value.trim(),
@@ -154,7 +237,7 @@ if (reservationForm) {
         Swal.fire({
           icon: 'success',
           title: 'Thanks for your booking!',
-          text: `Your Table ${currentlySelectedTable} is booked now.`,
+          text: `Your Table ${currentlySelectedTable} is booked for ${selectedDate} at ${selectedTime}.`,
           background: '#12121a',
           color: '#f5f5f5',
           confirmButtonColor: '#c9a84c',
@@ -165,8 +248,8 @@ if (reservationForm) {
         document.querySelectorAll('.table-card.is-selected').forEach(el => el.classList.remove('is-selected'));
         currentlySelectedTable = null;
         selectedTableInput.value = '';
-        bookedTableNumbers.push(formData.tableNumber);
-        renderTables();
+        if (dateInput) dateInput.value = selectedDate;
+        await onDateOrTimeChange();
       } else {
         Swal.fire({
           icon: 'error',
@@ -177,13 +260,13 @@ if (reservationForm) {
           confirmButtonColor: '#c9a84c',
           iconColor: '#dc3545',
         });
-        renderTables();
+        await onDateOrTimeChange();
       }
     } catch {
       Swal.fire({
         icon: 'success',
         title: 'Thanks for your booking!',
-        text: `Your Table ${currentlySelectedTable} is booked now.`,
+        text: `Your Table ${currentlySelectedTable} is booked for ${selectedDate} at ${selectedTime}.`,
         background: '#12121a',
         color: '#f5f5f5',
         confirmButtonColor: '#c9a84c',
@@ -194,6 +277,8 @@ if (reservationForm) {
       document.querySelectorAll('.table-card.is-selected').forEach(el => el.classList.remove('is-selected'));
       currentlySelectedTable = null;
       selectedTableInput.value = '';
+      if (dateInput) dateInput.value = selectedDate;
+      await onDateOrTimeChange();
     }
 
     submitBtn.innerHTML = '<i class="fas fa-calendar-check"></i> Confirm Reservation';
@@ -202,7 +287,11 @@ if (reservationForm) {
 }
 
 async function initReservation() {
-  await fetchBookedTables();
+  selectedDate = dateInput ? dateInput.value : '';
+  selectedTime = timeInput ? timeInput.value : '';
+  if (selectedDate) {
+    await fetchBookings(selectedDate);
+  }
   renderTables();
 }
 

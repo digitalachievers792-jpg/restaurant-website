@@ -386,30 +386,33 @@ async function loadOrders() {
 }
 
 async function loadContacts() {
-  const tbody = document.getElementById('contactsBody');
+  var tbody = document.getElementById('contactsBody');
+  if (!tbody) return;
   try {
-    const res = await fetch(`${API_URL}/contact`);
-    const data = await res.json();
+    var res = await fetch(API_URL + '/contact');
+    var data = await res.json();
     if (data.success && data.data) {
       if (data.data.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i>No messages found</td></tr>';
       } else {
-        tbody.innerHTML = data.data.map(c => `<tr>
-          <td>#${c.id}</td>
-          <td><strong>${c.name}</strong></td>
-          <td>${c.email}</td>
-          <td>${c.phone || '-'}</td>
-          <td>${c.subject}</td>
-          <td style="max-width:250px;white-space:normal;word-break:break-word;color:#999;font-size:12px;">${c.message}</td>
-          <td>${new Date(c.created_at).toLocaleString()}</td>
-        </tr>`).join('');
+        tbody.innerHTML = data.data.map(function(c) { return '<tr>' +
+          '<td>#' + c.id + '</td>' +
+          '<td><strong>' + c.name + '</strong></td>' +
+          '<td>' + c.email + '</td>' +
+          '<td>' + (c.phone || '-') + '</td>' +
+          '<td>' + c.subject + '</td>' +
+          '<td style="max-width:250px;white-space:normal;word-break:break-word;color:#999;font-size:12px;">' + c.message + '</td>' +
+          '<td>' + new Date(c.created_at).toLocaleString() + '</td>' +
+        '</tr>'; }).join('');
       }
-      document.getElementById('statContacts').textContent = data.count;
+      var st = document.getElementById('statContacts');
+      if (st) st.textContent = data.count;
     }
   } catch(e) {
     tbody.innerHTML = '<tr><td colspan="7" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error loading messages</td></tr>';
   }
-  document.getElementById('conLastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+  var lu = document.getElementById('conLastUpdated');
+  if (lu) lu.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
 }
 
 async function loadMenuItems() {

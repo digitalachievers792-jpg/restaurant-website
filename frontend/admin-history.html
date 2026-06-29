@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History | Royal Oak Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh}
+.header{background:#12121a;border-bottom:1px solid rgba(201,168,76,0.2);padding:15px 30px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{color:#c9a84c;font-size:20px;font-family:'Georgia',serif}
+.header h1 span{color:#e0e0e0;font-weight:300;font-size:14px}
+.header-right{display:flex;gap:12px;align-items:center}
+.nav-btn{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:#c9a84c;padding:8px 14px;border-radius:5px;cursor:pointer;font-size:12px;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.nav-btn:hover{background:rgba(201,168,76,0.2)}
+.live-btn{background:rgba(40,167,69,0.1);border-color:rgba(40,167,69,0.3);color:#28a745}
+.live-btn:hover{background:rgba(40,167,69,0.2)}
+.logout-btn{background:transparent;border:1px solid rgba(220,53,69,0.4);color:#dc3545;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:12px;transition:.3s}
+.logout-btn:hover{background:rgba(220,53,69,0.1)}
+.container{max-width:1400px;margin:0 auto;padding:25px 30px}
+.filter-section{background:#12121a;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:20px 22px;margin-bottom:25px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px}
+.filter-section .filter-label{color:#999;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.filter-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.filter-row input{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:9px 12px;border-radius:5px;font-size:13px;outline:none}
+.filter-row input:focus{border-color:#c9a84c}
+.filter-row button{background:linear-gradient(135deg,#c9a84c,#e8c55a);color:#0a0a0f;border:none;padding:9px 18px;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;transition:.3s}
+.filter-row button:hover{transform:translateY(-2px)}
+.filter-row button.secondary{background:rgba(255,255,255,0.06);color:#e0e0e0;border:1px solid rgba(255,255,255,0.1)}
+.section-card{background:#12121a;border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:25px;overflow:hidden}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.06);flex-wrap:wrap;gap:10px}
+.section-header h2{font-size:17px;color:#c9a84c}
+.section-header h2 i{margin-right:10px}
+.section-header .count{color:#666;font-size:13px;font-weight:400}
+.table-wrap{overflow-x:auto;padding:0 5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:12px 15px;color:#999;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,0.06);white-space:nowrap}
+td{padding:11px 15px;border-bottom:1px solid rgba(255,255,255,0.03);white-space:nowrap}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.badge-pending{background:rgba(201,168,76,0.15);color:#c9a84c}
+.badge-cancelled{background:rgba(220,53,69,0.12);color:#dc3545}
+.badge-confirmed{background:rgba(40,167,69,0.12);color:#28a745}
+.badge-free{background:rgba(108,117,125,0.12);color:#6c757d}
+.badge-table{display:inline-block;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:2px 10px;border-radius:4px;font-size:12px;color:#c9a84c;font-weight:600}
+.empty-state{text-align:center;padding:40px;color:#666}
+.empty-state i{font-size:36px;margin-bottom:12px;display:block}
+.loading{text-align:center;padding:30px;color:#666}
+.loading i{font-size:24px;margin-bottom:8px;display:block}
+.tabs{display:flex;gap:2px;margin-bottom:25px;background:#12121a;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
+.tab{flex:1;padding:14px;text-align:center;cursor:pointer;font-size:14px;color:#666;transition:.3s;border:none;background:transparent;font-weight:500}
+.tab:hover{color:#e0e0e0}
+.tab.active{background:rgba(201,168,76,0.1);color:#c9a84c;font-weight:600}
+.tab i{margin-right:8px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+@media(max-width:768px){
+  .container{padding:15px}
+  .header{padding:12px 15px}
+  .header h1{font-size:16px}
+  .header h1 span{display:none}
+  th,td{padding:8px 10px;font-size:12px}
+  .filter-section{flex-direction:column;align-items:stretch}
+  .filter-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Royal Oak <span>| History</span></h1>
+  <div class="header-right">
+    <a href="admin.html" class="nav-btn live-btn"><i class="fas fa-bolt"></i> Live Dashboard</a>
+    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="filter-section">
+    <div>
+      <div class="filter-label"><i class="far fa-calendar-alt"></i> Date Range</div>
+      <div class="filter-row">
+        <input type="date" id="fromDate">
+        <span style="color:#666;font-size:13px;">to</span>
+        <input type="date" id="toDate">
+        <button onclick="loadAll()"><i class="fas fa-search"></i> Search</button>
+        <button class="secondary" onclick="setLastYear()"><i class="fas fa-undo"></i> Last 1 Year</button>
+        <button class="secondary" onclick="setAll()"><i class="fas fa-globe"></i> All Time</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('reservations',this)"><i class="fas fa-calendar-check"></i> Reservations</button>
+    <button class="tab" onclick="switchTab('orders',this)"><i class="fas fa-shopping-cart"></i> Orders</button>
+    <button class="tab" onclick="switchTab('contacts',this)"><i class="fas fa-envelope"></i> Messages</button>
+    <button class="tab" onclick="switchTab('contactforms',this)"><i class="fas fa-address-card"></i> Contact Forms</button>
+  </div>
+
+  <div id="tab-reservations" class="tab-content active">
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-calendar-check"></i> Table Bookings History</h2>
+        <button class="nav-btn" onclick="loadReservations()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Name</th><th>Phone</th><th>Table</th><th>Date</th><th>Time</th><th>Guests</th><th>Status</th><th>Booked At</th>
+          </tr></thead>
+          <tbody id="reservationsBody"><tr><td colspan="9" class="loading"><i class="fas fa-spinner fa-spin"></i>Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-orders" class="tab-content">
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-shopping-cart"></i> Orders History</h2>
+        <button class="nav-btn" onclick="loadOrders()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Customer</th><th>Gender</th><th>Item</th><th>Price</th><th>Qty</th><th>Total</th><th>Date</th>
+          </tr></thead>
+          <tbody id="ordersBody"><tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-spin"></i>Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-contacts" class="tab-content">
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-envelope"></i> Messages History</h2>
+        <button class="nav-btn" onclick="loadContacts()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Subject</th><th>Message</th><th>Date</th>
+          </tr></thead>
+          <tbody id="contactsBody"><tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i>Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-contactforms" class="tab-content">
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-address-card"></i> Contact Forms History</h2>
+        <button class="nav-btn" onclick="loadContactForms()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>City</th><th>Email</th><th>Description</th><th>Date</th>
+          </tr></thead>
+          <tbody id="contactFormsBody"><tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-spin"></i>Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://restaurant-website-production-e3b2.up.railway.app/api';
+
+function logout() {
+  localStorage.removeItem('admin_logged_in');
+  window.location.href = 'admin.html';
+}
+
+function qs(key) { return document.getElementById(key).value; }
+
+function setLastYear() {
+  const d = new Date();
+  document.getElementById('toDate').value = d.toISOString().split('T')[0];
+  d.setFullYear(d.getFullYear() - 1);
+  document.getElementById('fromDate').value = d.toISOString().split('T')[0];
+  loadAll();
+}
+
+function setAll() {
+  document.getElementById('fromDate').value = '';
+  document.getElementById('toDate').value = '';
+  loadAll();
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function buildURL(base) {
+  const from = qs('fromDate');
+  const to = qs('toDate');
+  const params = [];
+  if (from) params.push('from=' + from);
+  if (to) params.push('to=' + to);
+  return params.length ? base + '?' + params.join('&') : base;
+}
+
+async function loadReservations() {
+  const tbody = document.getElementById('reservationsBody');
+  try {
+    const res = await fetch(buildURL(`${API_URL}/reservations`));
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (!data.data.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-inbox"></i>No reservations found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(r => `<tr>
+          <td>#${r.id}</td>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.phone}</td>
+          <td><span class="badge-table">Table ${r.table_number}</span></td>
+          <td>${new Date(r.date).toLocaleDateString()}</td>
+          <td>${r.time}</td>
+          <td>${r.guests}</td>
+          <td><span class="badge badge-${r.display_status === 'free' ? 'free' : r.status === 'cancelled' ? 'cancelled' : 'pending'}">${r.display_status || r.status}</span></td>
+          <td>${new Date(r.created_at).toLocaleString()}</td>
+        </tr>`).join('');
+      }
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="9" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error</td></tr>';
+  }
+}
+
+async function loadOrders() {
+  const tbody = document.getElementById('ordersBody');
+  try {
+    const res = await fetch(buildURL(`${API_URL}/orders`));
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (!data.data.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i>No orders found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(o => `<tr>
+          <td>#${o.id}</td>
+          <td><strong>${o.customer_name}</strong></td>
+          <td>${o.customer_gender}</td>
+          <td>${o.item_name}</td>
+          <td>$${parseFloat(o.item_price).toFixed(2)}</td>
+          <td>${o.quantity}</td>
+          <td><strong>$${(o.item_price * o.quantity).toFixed(2)}</strong></td>
+          <td>${new Date(o.order_date).toLocaleString()}</td>
+        </tr>`).join('');
+      }
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="8" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error</td></tr>';
+  }
+}
+
+async function loadContacts() {
+  const tbody = document.getElementById('contactsBody');
+  try {
+    const res = await fetch(buildURL(`${API_URL}/contact`));
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (!data.data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i>No messages found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(c => `<tr>
+          <td>#${c.id}</td>
+          <td><strong>${c.name}</strong></td>
+          <td>${c.email}</td>
+          <td>${c.phone || '-'}</td>
+          <td>${c.subject}</td>
+          <td style="max-width:220px;white-space:normal;word-break:break-word;color:#999;font-size:12px;">${c.message}</td>
+          <td>${new Date(c.created_at).toLocaleString()}</td>
+        </tr>`).join('');
+      }
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="7" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error</td></tr>';
+  }
+}
+
+async function loadContactForms() {
+  const tbody = document.getElementById('contactFormsBody');
+  try {
+    const res = await fetch(buildURL(`${API_URL}/contact-form`));
+    const data = await res.json();
+    if (data.success && data.data) {
+      if (!data.data.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i>No contact forms found</td></tr>';
+      } else {
+        tbody.innerHTML = data.data.map(c => `<tr>
+          <td>#${c.id}</td>
+          <td><strong>${c.name}</strong></td>
+          <td>${c.age}</td>
+          <td>${c.gender}</td>
+          <td>${c.city}</td>
+          <td>${c.email}</td>
+          <td style="max-width:220px;white-space:normal;word-break:break-word;color:#999;font-size:12px;">${c.description}</td>
+          <td>${new Date(c.created_at).toLocaleString()}</td>
+        </tr>`).join('');
+      }
+    }
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="8" class="loading" style="color:#dc3545;"><i class="fas fa-exclamation-triangle"></i>Error</td></tr>';
+  }
+}
+
+function loadAll() { loadReservations(); loadOrders(); loadContacts(); loadContactForms(); }
+
+if (localStorage.getItem('admin_logged_in') !== 'true') {
+  window.location.href = 'admin.html';
+} else {
+  setLastYear();
+}
+</script>
+</body>
+</html>

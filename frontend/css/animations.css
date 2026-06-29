@@ -1,52 +1,6 @@
 [data-aos] {
-  opacity: 0;
-  transition-property: opacity, transform;
-}
-
-[data-aos].aos-animate {
-  opacity: 1;
-}
-
-[data-aos="fade-up"] {
-  transform: translateY(60px);
-}
-[data-aos="fade-up"].aos-animate {
-  transform: translateY(0);
-}
-
-[data-aos="fade-down"] {
-  transform: translateY(-60px);
-}
-[data-aos="fade-down"].aos-animate {
-  transform: translateY(0);
-}
-
-[data-aos="fade-right"] {
-  transform: translateX(-60px);
-}
-[data-aos="fade-right"].aos-animate {
-  transform: translateX(0);
-}
-
-[data-aos="fade-left"] {
-  transform: translateX(60px);
-}
-[data-aos="fade-left"].aos-animate {
-  transform: translateX(0);
-}
-
-[data-aos="zoom-in"] {
-  transform: scale(0.8);
-}
-[data-aos="zoom-in"].aos-animate {
-  transform: scale(1);
-}
-
-[data-aos="flip-up"] {
-  transform: perspective(400px) rotateX(-30deg);
-}
-[data-aos="flip-up"].aos-animate {
-  transform: perspective(400px) rotateX(0);
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 .menu-item {
@@ -72,7 +26,7 @@
 }
 
 .gallery-item:hover img {
-  transform: scale(1.15) rotate(2deg);
+  transform: scale(1.15);
 }
 
 .btn {
@@ -108,14 +62,9 @@
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 0;
+  width: 60px;
   height: 2px;
   background: var(--gold-gradient);
-  transition: width 1s ease 0.3s;
-}
-
-.section-title.aos-animate h2::after {
-  width: 60px;
 }
 
 .hero-title {
@@ -154,15 +103,15 @@
 }
 
 .glow {
-  animation: glow 2s ease-in-out infinite alternate;
+  animation: glow 3s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
   from {
-    text-shadow: 0 0 10px rgba(201, 168, 76, 0.3);
+    text-shadow: 0 0 10px rgba(201, 168, 76, 0.2);
   }
   to {
-    text-shadow: 0 0 20px rgba(201, 168, 76, 0.6), 0 0 40px rgba(201, 168, 76, 0.3);
+    text-shadow: 0 0 15px rgba(201, 168, 76, 0.4), 0 0 30px rgba(201, 168, 76, 0.15);
   }
 }
 
@@ -231,5 +180,44 @@
 }
 
 .whatsapp-float a:hover {
-  transform: scale(1.15) rotate(-5deg);
+  transform: scale(1.15);
+}
+
+/* ===== MOBILE: Reduce heavy animations ===== */
+@media screen and (max-width: 768px) {
+  .glow {
+    animation: none;
+    text-shadow: 0 0 10px rgba(201, 168, 76, 0.3);
+  }
+
+  .hero-title,
+  .hero-subtitle,
+  .hero-title-sub,
+  .hero-desc,
+  .hero-buttons {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu-item:nth-child(n) {
+    transition-delay: 0s;
+  }
+
+  .about-stat:hover,
+  .feature-card:hover,
+  .event-card:hover,
+  .menu-item:hover,
+  .btn:hover,
+  .footer-social a:hover {
+    transform: none;
+  }
+
+  .gallery-item:hover img {
+    transform: none;
+  }
+
+  .whatsapp-float a:hover {
+    transform: none;
+  }
 }

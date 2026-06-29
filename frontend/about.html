@@ -3,11 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0f">
   <title>About Us | Royal Oak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css?v=2">
-  <link rel="stylesheet" href="css/animations.css?v=2">
-  <link rel="stylesheet" href="css/responsive.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/animations.css?v=4">
+  <link rel="stylesheet" href="css/responsive.css?v=4">
 </head>
 <body>
 
@@ -37,6 +43,9 @@
         <i class="fas fa-moon"></i>
       </button>
     </nav>
+    <button class="theme-toggle" id="themeToggleMobile" aria-label="Toggle theme" style="display:none;">
+      <i class="fas fa-moon"></i>
+    </button>
     <div class="nav-toggle" id="navToggle">
       <span></span><span></span><span></span>
     </div>
@@ -56,8 +65,8 @@
   <section class="section">
     <div class="container">
       <div class="about-grid">
-        <div class="about-image" data-aos="fade-right">
-          <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb51f3a?w=800&q=80" alt="Restaurant ambiance">
+        <div class="about-image" data-aos="fade-right" style="background:#1a1a2e;">
+          <img src="images/about/restaurant-ambiance.jpg" alt="Restaurant ambiance" loading="lazy">
         </div>
         <div class="about-content" data-aos="fade-left">
           <span class="about-sub">Since 2010</span>
@@ -91,9 +100,9 @@
         <span>Meet the Team</span>
         <h2>Our Executive Chef</h2>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
-        <div data-aos="fade-right">
-          <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=600&q=80" alt="Chef" style="width:100%;border-radius:10px;height:500px;object-fit:cover;">
+      <div class="about-chef-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+        <div data-aos="fade-right" style="background:#1a1a2e;border-radius:10px;">
+          <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=600&q=80" alt="Chef Antonio Moretti" style="width:100%;border-radius:10px;height:500px;object-fit:cover;display:block;" loading="lazy">
         </div>
         <div data-aos="fade-left">
           <span class="about-sub" style="color:var(--primary);font-family:'Poppins',sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;">Executive Chef</span>
@@ -118,16 +127,19 @@
         <h2>Our Ambiance</h2>
         <p>Every detail designed for your comfort and delight.</p>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-        <div data-aos="zoom-in" data-aos-delay="100" style="border-radius:8px;overflow:hidden;height:300px;">
-          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80" alt="Interior" style="width:100%;height:100%;object-fit:cover;transition:var(--transition);">
+      <div class="ambiance-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+        <div data-aos="zoom-in" data-aos-delay="100" style="border-radius:8px;overflow:hidden;height:300px;background:#1a1a2e;">
+          <img src="images/about/ambiance-grid-1.jpg" alt="Restaurant Ambiance" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">
         </div>
-        <div data-aos="zoom-in" data-aos-delay="200" style="border-radius:8px;overflow:hidden;height:300px;">
-          <img src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=600&q=80" alt="Bar" style="width:100%;height:100%;object-fit:cover;transition:var(--transition);">
+        <div data-aos="zoom-in" data-aos-delay="200" style="border-radius:8px;overflow:hidden;height:300px;background:#1a1a2e;">
+          <img src="images/about/ambiance-grid-2.jpg" alt="Bar Area" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">
         </div>
-        <div data-aos="zoom-in" data-aos-delay="300" style="border-radius:8px;overflow:hidden;height:300px;">
-          <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb51f3a?w=600&q=80" alt="Dining" style="width:100%;height:100%;object-fit:cover;transition:var(--transition);">
+        <div data-aos="zoom-in" data-aos-delay="300" style="border-radius:8px;overflow:hidden;height:300px;background:#1a1a2e;">
+          <img src="images/about/ambiance-grid-3.jpg" alt="Fine Dining Area" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">
         </div>
+      </div>
+      <div class="ambiance-large" data-aos="fade-up" style="margin-top:30px;border-radius:8px;overflow:hidden;background:#1a1a2e;">
+        <img src="images/about/ambiance-large.jpg" alt="Restaurant Ambiance" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">
       </div>
     </div>
   </section>
@@ -189,9 +201,9 @@
     <a href="tel:+15551234567" class="call-btn" aria-label="Call"><i class="fas fa-phone"></i></a>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script src="js/main.js?v=2"></script>
-  <script src="js/animations.js?v=2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+  <script src="js/main.js?v=4" defer></script>
+  <script src="js/animations.js?v=4" defer></script>
 </body>
 </html>

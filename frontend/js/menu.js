@@ -86,7 +86,7 @@ function renderMenuItems(items, containerId = 'menuGrid') {
         <p>${item.description}</p>
         <div class="menu-item-footer">
           <span class="menu-item-price">${getCurrencySymbol(item.currency)}${item.price}</span>
-          <button class="btn btn-primary" style="padding:8px 16px;font-size:11px;" onclick='openOrderModal(${JSON.stringify(item).replace(/'/g, "\\'")})'>
+          <button class="btn btn-primary menu-order-btn" onclick='openOrderModal(${JSON.stringify(item).replace(/'/g, "\\'")})'>
             <i class="fas fa-shopping-cart"></i> Order
           </button>
         </div>
